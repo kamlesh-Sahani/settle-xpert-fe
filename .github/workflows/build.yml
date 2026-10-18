@@ -1,0 +1,26 @@
+name: build
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  packages: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          build-args: |
+            BACKEND_URL=http://api:8080
+          tags: |
+            ghcr.io/kamlesh-sahani/settlexpert-web:${{ github.sha }}
+            ghcr.io/kamlesh-sahani/settlexpert-web:latest

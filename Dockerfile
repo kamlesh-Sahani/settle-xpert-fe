@@ -7,8 +7,8 @@ FROM node:22-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG BACKEND_URL
+ENV BACKEND_URL=$BACKEND_URL NEXT_PUBLIC_BACKEND_URL=$BACKEND_URL
 RUN npm run build
 
 FROM node:22-alpine
