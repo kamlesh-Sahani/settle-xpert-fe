@@ -1,0 +1,415 @@
+@import "tailwindcss" important;
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Background */
+  --background: #fff;
+  --background-secondary: #F9F8F8;
+
+  /* Sidebar - Default Light Blush */
+  --sidebar-bg: #fdebee;
+  --sidebar-hover: #fae1e5;
+  --sidebar-border: #ebd3d8;
+  --sidebar-text: #1f2937;
+  --sidebar-text-muted: #4b5563;
+
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+
+  /* Border */
+  --border: #e5e7eb;
+
+  /* Primary - Light Blush Crimson */
+  --primary: #e62e4d;
+  --primary-hover: #cc243f;
+  --primary-500: #e62e4d;
+  --primary-600: #cc243f;
+  --primary-700: #b01b35;
+
+  /* Minimal scale (only what you actually need) */
+  --primary-5: color-mix(in srgb, var(--primary) 2%, var(--background));
+  --primary-10: color-mix(in srgb, var(--primary) 4%, var(--background));
+  --primary-20: #eff6ffe7;
+  --primary-30: #eff6ffdd;
+  --primary-50: #eff6ff;
+  --primary-100: #dbeafe;
+  --primary-200: #bfdbfe;
+  --primary-300: #93c5fd;
+  --primary-400: #60a5fa;
+
+  /* Status */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  --radius: 6px;
+
+  /* Global Font Variables for Runtime CSS */
+  --font-sans: var(--font-ibm-plex-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-secondary: var(--background-secondary);
+
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-text: var(--sidebar-text);
+  --color-sidebar-text-muted: var(--sidebar-text-muted);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+
+  --color-primary-5: var(--primary-5);
+  --color-primary-10: var(--primary-10);
+  --color-primary-20: var(--primary-20);
+  --color-primary-30: var(--primary-30);
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+
+  --color-border: var(--border);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font-ibm-plex-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+/* ✅ CLEAN DARK MODE (fixed) */
+.dark,
+:root.dark {
+  /* Backgrounds (neutral, not blue) */
+  --background: #0b1220;
+  --background-secondary: #111827;
+
+  /* Text (proper contrast) */
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+
+  /* Border (visible but subtle) */
+  --border: #1f2937;
+
+  /* Sidebar - Dark Default */
+  --sidebar-bg: #111827;
+  --sidebar-hover: #1f2937;
+  --sidebar-border: #1f2937;
+  --sidebar-text: #f9fafb;
+  --sidebar-text-muted: #9ca3af;
+
+  /* Primary (slightly brighter in dark) */
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-500: #3b82f6;
+  --primary-600: #2563eb;
+  --primary-700: #1d4ed8;
+
+  /* Minimal usable scale */
+  --primary-10: color-mix(in srgb, var(--primary) 10%, var(--background));
+  --primary-20: #0f172a;
+  --primary-30: #0b1220;
+  --primary-50: #0f172a;
+  --primary-100: #1e293b;
+  --primary-200: #334155;
+  --primary-300: #475569;
+  --primary-400: #64748b;
+
+  /* Status (slightly softer for dark UI) */
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f87171;
+}
+
+/* Ultra-slim subtle scrollbar */
+::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--primary-600);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-700, var(--primary-hover));
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--primary-600);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-700, var(--primary-hover));
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-600) transparent;
+}
+
+/* ─── Ant Design & Virtual List Scrollbars (Select, Tree, Table, etc.) ─── */
+:root,
+body {
+  --rc-virtual-list-scrollbar-bg: var(--primary, #e62e4d);
+}
+
+.ant-select-dropdown,
+.custom-select-dropdown,
+.ant-select-dropdown-list {
+  --rc-virtual-list-scrollbar-bg: var(--primary, #e62e4d) !important;
+}
+
+/* 1. Virtual Scrollbar Container (Reduced slim width: 3px) */
+.ant-select-dropdown-list-scrollbar,
+.ant-select-dropdown-list-scrollbar-vertical,
+.ant-select-dropdown .ant-select-dropdown-list-scrollbar,
+.custom-select-dropdown .ant-select-dropdown-list-scrollbar,
+.ant-select-dropdown [class*="-scrollbar"],
+.custom-select-dropdown [class*="-scrollbar"],
+.rc-virtual-list-scrollbar,
+.rc-virtual-list-scrollbar.rc-virtual-list-scrollbar-vertical {
+  width: 3px !important;
+  right: 1px !important;
+}
+
+.ant-select-dropdown-list-scrollbar-horizontal,
+.ant-select-dropdown [class*="-scrollbar-horizontal"],
+.rc-virtual-list-scrollbar.rc-virtual-list-scrollbar-horizontal {
+  height: 3px !important;
+  bottom: 1px !important;
+}
+
+/* 2. Virtual Scrollbar Thumb (Primary color + reduced slim width: 3px) */
+.ant-select-dropdown-list-scrollbar-thumb,
+.ant-select-dropdown .ant-select-dropdown-list-scrollbar-thumb,
+.custom-select-dropdown .ant-select-dropdown-list-scrollbar-thumb,
+.ant-select-dropdown [class*="-scrollbar-thumb"],
+.custom-select-dropdown [class*="-scrollbar-thumb"],
+.rc-virtual-list-scrollbar .rc-virtual-list-scrollbar-thumb {
+  width: 3px !important;
+  background: var(--primary, #e62e4d) !important;
+  background-color: var(--primary, #e62e4d) !important;
+  border-radius: 9999px !important;
+  transition: background-color 0.2s ease;
+}
+
+.ant-select-dropdown-list-scrollbar-thumb:hover,
+.ant-select-dropdown .ant-select-dropdown-list-scrollbar-thumb:hover,
+.custom-select-dropdown .ant-select-dropdown-list-scrollbar-thumb:hover,
+.ant-select-dropdown [class*="-scrollbar-thumb"]:hover,
+.custom-select-dropdown [class*="-scrollbar-thumb"]:hover,
+.rc-virtual-list-scrollbar .rc-virtual-list-scrollbar-thumb:hover {
+  background: var(--primary-hover, #cc243f) !important;
+  background-color: var(--primary-hover, #cc243f) !important;
+}
+
+/* 3. Native fallback scrollbar for Select dropdowns & virtual list holders */
+.ant-select-dropdown-list-holder,
+.ant-select-dropdown .ant-select-dropdown-list-holder,
+.custom-select-dropdown .ant-select-dropdown-list-holder,
+.ant-select-dropdown [class*="-holder"],
+.custom-select-dropdown [class*="-holder"],
+.rc-virtual-list-holder {
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--primary, #e62e4d) transparent !important;
+}
+
+.ant-select-dropdown-list-holder::-webkit-scrollbar,
+.ant-select-dropdown .ant-select-dropdown-list-holder::-webkit-scrollbar,
+.custom-select-dropdown .ant-select-dropdown-list-holder::-webkit-scrollbar,
+.ant-select-dropdown [class*="-holder"]::-webkit-scrollbar,
+.custom-select-dropdown [class*="-holder"]::-webkit-scrollbar,
+.rc-virtual-list-holder::-webkit-scrollbar {
+  width: 3px !important;
+  height: 3px !important;
+}
+
+.ant-select-dropdown-list-holder::-webkit-scrollbar-track,
+.ant-select-dropdown [class*="-holder"]::-webkit-scrollbar-track,
+.custom-select-dropdown [class*="-holder"]::-webkit-scrollbar-track,
+.rc-virtual-list-holder::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.ant-select-dropdown-list-holder::-webkit-scrollbar-thumb,
+.ant-select-dropdown .ant-select-dropdown-list-holder::-webkit-scrollbar-thumb,
+.custom-select-dropdown .ant-select-dropdown-list-holder::-webkit-scrollbar-thumb,
+.ant-select-dropdown [class*="-holder"]::-webkit-scrollbar-thumb,
+.custom-select-dropdown [class*="-holder"]::-webkit-scrollbar-thumb,
+.rc-virtual-list-holder::-webkit-scrollbar-thumb {
+  background-color: var(--primary, #e62e4d) !important;
+  border-radius: 9999px !important;
+}
+
+.ant-select-dropdown-list-holder::-webkit-scrollbar-thumb:hover,
+.ant-select-dropdown [class*="-holder"]::-webkit-scrollbar-thumb:hover,
+.custom-select-dropdown [class*="-holder"]::-webkit-scrollbar-thumb:hover,
+.rc-virtual-list-holder::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-hover, #cc243f) !important;
+}
+
+/* Ant Design override */
+.ant-form-item-explain-error {
+  position: absolute;
+  font-size: 11px;
+}
+
+/* ─── DynamicTable: Always-visible virtual scrollbars ────────────────── */
+
+/* Force the virtual horizontal scrollbar to always be visible */
+.dynamic-table-container .ant-table-tbody-virtual-scrollbar-horizontal {
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: 7px !important;
+  background: var(--background-secondary, #F9F8F8);
+  border-radius: 5px;
+}
+
+/* Hide the virtual vertical scrollbar (we will use the native one instead) */
+.dynamic-table-container .ant-table-tbody-virtual-scrollbar-vertical {
+  display: none !important;
+}
+
+/* Style the virtual horizontal scrollbar thumb */
+.dynamic-table-container .ant-table-tbody-virtual-scrollbar-horizontal .ant-table-tbody-virtual-scrollbar-thumb {
+  background-color: var(--primary-600) !important;
+  border-radius: 9999px !important;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.dynamic-table-container .ant-table-tbody-virtual-scrollbar-horizontal .ant-table-tbody-virtual-scrollbar-thumb:hover {
+  background-color: var(--primary-700, var(--primary-hover)) !important;
+  opacity: 1;
+}
+
+/* Hide only the native horizontal scrollbar (virtual scrollbar replaces it)
+   Leave the native vertical scrollbar alone so it works natively */
+.dynamic-table-container .ant-table-tbody-virtual-holder::-webkit-scrollbar:horizontal {
+  height: 0;
+}
+
+
+/* Force table body to take full available height using the precise calculated scrollY */
+.dynamic-table-container .ant-table-body {
+  height: var(--table-scroll-y) !important;
+  max-height: var(--table-scroll-y) !important;
+}
+
+.dynamic-table-container .ant-table-tbody-virtual-holder {
+  height: var(--table-scroll-y) !important;
+  max-height: var(--table-scroll-y) !important;
+}
+
+/* Fix black color shadows on left and right when scrolling */
+.dynamic-table-container .ant-table-container::before,
+.dynamic-table-container .ant-table-container::after,
+.dynamic-table-container .ant-table-cell-fix-left-last::after,
+.dynamic-table-container .ant-table-cell-fix-right-first::after {
+  box-shadow: none !important;
+}
+
+.dynamic-table-container .ant-table-thead>tr>th,
+.dynamic-table-container .ant-table-header {
+  background-color: var(--primary-5) !important;
+  color: var(--text-primary) !important;
+}
+
+.dynamic-table-container .ant-table-thead>tr>th .ant-table-column-title,
+.dynamic-table-container .ant-table-thead>tr>th .ant-table-column-sorters {
+  color: var(--text-primary) !important;
+}
+
+
+/* ─── Discard Confirm Modal Override ─── */
+.discard-confirm-modal .ant-modal-content {
+  padding: 0 !important;
+  border-radius: 4px !important;
+  overflow: hidden;
+}
+
+.discard-confirm-modal .ant-modal-confirm-body-wrapper {
+  padding: 0 !important;
+}
+
+.discard-confirm-modal .ant-modal-confirm-body {
+  padding: 0 !important;
+}
+
+/* ─── Global Placeholder Override ─── */
+::placeholder {
+  opacity: 1 !important;
+  color: var(--text-secondary) !important;
+}
+
+.ant-input::placeholder,
+.ant-input-password input::placeholder,
+.ant-select-selection-placeholder {
+  opacity: 1 !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ─── Remove browser autofill / autocomplete suggestion background color ─── */
+input:autofill,
+input:autofill:hover,
+input:autofill:focus,
+input:autofill:active,
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:autofill,
+textarea:autofill:hover,
+textarea:autofill:focus,
+textarea:autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active,
+select:autofill,
+select:autofill:hover,
+select:autofill:focus,
+select:autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  -webkit-text-fill-color: inherit !important;
+  caret-color: currentColor !important;
+  transition: background-color 5000000s ease-in-out 0s, color 5000000s ease-in-out 0s !important;
+}

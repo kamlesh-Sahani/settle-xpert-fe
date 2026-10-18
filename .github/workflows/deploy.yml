@@ -1,0 +1,201 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: "deploy-vps"
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Package build output (Multi-threaded Compression)
+        run: |
+          FILES=".next public package.json package-lock.json server.js"
+          for cfg in next.config.js next.config.mjs next.config.ts; do
+            if [ -f "$cfg" ]; then
+              FILES="$FILES $cfg"
+            fi
+          done
+          echo "Packaging: $FILES"
+          # Exclude .next/cache from archive, compress rapidly with pigz (multi-core) if available
+          if command -v pigz > /dev/null; then
+            tar --exclude='.next/cache' -I 'pigz -1' -cf build.tar.gz $FILES
+          else
+            tar --exclude='.next/cache' -czf build.tar.gz $FILES
+          fi
+          echo "Build archive created successfully:"
+          ls -lh build.tar.gz
+
+      - name: Copy build to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          source: "build.tar.gz"
+          target: "~/deploy-tmp/"
+
+      - name: Swap in new build and restart
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          command_timeout: 10m
+          script: |
+            set -euo pipefail
+
+            APP_DIR="${{ secrets.APP_PATH }}"
+            STAGING_DIR="${APP_DIR}.staging"
+            OLD_DIR="${APP_DIR}.old"
+            HEALTH_URL="${HEALTH_URL:-http://127.0.0.1:30001}"
+            PID_FILE="${APP_DIR}/app.pid"
+
+            # Auto-detect node binary path
+            NODE_CMD="$(which node 2>/dev/null || true)"
+            if [ -z "$NODE_CMD" ]; then
+              for candidate in /usr/bin/node /usr/local/bin/node "$HOME/.nvm/versions/node/"*/bin/node; do
+                if [ -x "$candidate" ]; then
+                  NODE_CMD="$candidate"
+                  break
+                fi
+              done
+            fi
+
+            if [ -z "$NODE_CMD" ]; then
+              echo "❌ Error: Node.js binary could not be found on VPS"
+              exit 1
+            fi
+
+            NODE_BIN="$(dirname "$NODE_CMD")"
+            export PATH="$NODE_BIN:$PATH:/usr/bin:/usr/local/bin"
+
+            stop_app() {
+              echo "Stopping existing process on port 30001..."
+              fuser -k 30001/tcp 2>/dev/null || kill -9 $(lsof -t -i:30001) 2>/dev/null || pkill -f "node server.js" 2>/dev/null || true
+              sleep 1
+              rm -f "$PID_FILE"
+            }
+
+            start_app() {
+              cd "$1"
+              nohup "$NODE_BIN/node" server.js > app.log 2>&1 &
+              echo $! > "$1/app.pid"
+              disown
+            }
+
+            echo "📦 Extracting new build into staging..."
+            rm -rf "$STAGING_DIR"
+            mkdir -p "$STAGING_DIR"
+            tar xzf ~/deploy-tmp/build.tar.gz -C "$STAGING_DIR"
+            rm -f ~/deploy-tmp/build.tar.gz
+
+            # Preserve environment variables
+            if [ -f "$(dirname "$APP_DIR")/.env" ]; then
+              cp "$(dirname "$APP_DIR")/.env" "$STAGING_DIR/.env"
+            elif [ -f "$(dirname "$APP_DIR")/.env.production" ]; then
+              cp "$(dirname "$APP_DIR")/.env.production" "$STAGING_DIR/.env"
+            elif [ -f "$APP_DIR/.env" ]; then
+              cp "$APP_DIR/.env" "$STAGING_DIR/.env"
+            elif [ -f "$APP_DIR/.env.production" ]; then
+              cp "$APP_DIR/.env.production" "$STAGING_DIR/.env"
+            fi
+
+            # Smart Dependency Cache: Reuse existing node_modules if lockfile is unchanged
+            LOCK_MATCH=false
+            if [ -d "$APP_DIR/node_modules" ] && [ -f "$APP_DIR/package-lock.json" ] && [ -f "$STAGING_DIR/package-lock.json" ]; then
+              if cmp -s "$APP_DIR/package-lock.json" "$STAGING_DIR/package-lock.json"; then
+                LOCK_MATCH=true
+              fi
+            fi
+
+            if [ "$LOCK_MATCH" = true ]; then
+              echo "⚡ Dependencies unchanged: Reusing node_modules (instant transfer)..."
+              cp -a "$APP_DIR/node_modules" "$STAGING_DIR/"
+            else
+              echo "📦 Dependencies changed or initial deploy: Installing production dependencies..."
+              if [ -d "$APP_DIR/node_modules" ]; then
+                cp -a "$APP_DIR/node_modules" "$STAGING_DIR/"
+              fi
+              cd "$STAGING_DIR"
+              "$NODE_BIN/npm" ci --omit=dev --prefer-offline --no-audit --no-fund
+            fi
+
+            echo "🔄 Swapping in new build..."
+            rm -rf "$OLD_DIR"
+            if [ -d "$APP_DIR" ]; then
+              mv "$APP_DIR" "$OLD_DIR"
+            fi
+            mv "$STAGING_DIR" "$APP_DIR"
+
+            echo "🚀 Restarting frontend..."
+            if command -v pm2 &>/dev/null && pm2 describe billing-frontend &>/dev/null; then
+              echo "Restarting via PM2..."
+              pm2 restart billing-frontend --update-env
+            else
+              echo "Restarting via standalone runner..."
+              stop_app
+              start_app "$APP_DIR"
+            fi
+
+            echo "🩺 Verifying application health..."
+            HEALTH_PASSED=false
+            for i in 1 2 3 4 5 6; do
+              sleep 1.5
+              if curl -fsS -o /dev/null "$HEALTH_URL"; then
+                echo "✅ Health check passed. Deploy successful!"
+                HEALTH_PASSED=true
+                rm -rf "$OLD_DIR"
+                break
+              fi
+              echo "Attempt $i: waiting for service (retrying in 1.5s)..."
+            done
+
+            if [ "$HEALTH_PASSED" != true ]; then
+              echo "❌ Health check FAILED. Rolling back to previous build..."
+              stop_app
+              rm -rf "$APP_DIR"
+              if [ -d "$OLD_DIR" ]; then
+                mv "$OLD_DIR" "$APP_DIR"
+                start_app "$APP_DIR"
+              fi
+              echo "Rolled back successfully. Deployment aborted."
+              exit 1
+            fi
