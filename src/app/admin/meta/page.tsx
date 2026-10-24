@@ -112,7 +112,6 @@ export default function IntegrationsPage() {
     try {
       setSaving(true);
       const payload = {
-        isActive: true,
         verifyToken: formData.verifyToken,
         pageAccessToken: formData.pageAccessToken,
         pageId: formData.pageId,

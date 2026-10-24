@@ -1,7 +1,6 @@
 export interface MetaConfig {
   id?: string;
-  provider: string;
-  isActive: boolean;
+  status: "ACTIVE" | "IN_ACTIVE";
   verifyToken: string;
   pageId: string;
   pageName: string;
