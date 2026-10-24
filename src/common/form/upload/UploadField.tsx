@@ -221,7 +221,10 @@ export default function UploadField(props: UploadFieldProps) {
 
         /* -- Custom dropzone content (Trackwick Style) -- */
         const dropzoneContent = (
-          <div className="flex flex-col items-center justify-center w-full h-full min-h-[200px] py-6 px-4 text-center border border-solid border-border rounded-[12px] hover:border-primary bg-secondary transition-colors cursor-pointer">
+          <div className={classNames(
+            "flex flex-col items-center justify-center w-full h-full min-h-[200px] py-6 px-4 text-center border border-solid border-border rounded-[12px] transition-colors",
+            disabled ? "opacity-50 cursor-not-allowed bg-secondary/50 pointer-events-none" : "hover:border-primary bg-secondary cursor-pointer"
+          )}>
             <div className="text-text-secondary mb-3 flex items-center justify-center">
               {icon || <FiUploadCloud className="text-[50px] text-text-secondary" />}
             </div>

@@ -15,7 +15,6 @@ import { ErrorApi } from "@/common/ui/ErrorApi";
 const withOutNavbarAndFooter = new Set([
   "/login",
   "/register",
-  "/verify-otp",
   "/verify",
   "/form-builder",
 ]);
@@ -47,7 +46,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
   const { error, refetch } = useFetch({
     client: api.get,
-    url: "/api/v1/users/config",
+    url: "/api/v1/team/config",
     dontCall: !isProtectedRoute || isInitialized,
     onSuccess: (res: any) => {
       if (res?.success) {
@@ -107,8 +106,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
   const moduleOptions = [
     { key: "MAIN", label: "Employee" },
-    { key: "SECONDARY", label: "Admin Setting" },
-    { key: "SUPER", label: "Super Admin" }
+    { key: "SECONDARY", label: "Admin Setting" }
   ];
 
   const filteredMenuItems = menus[currentMenu]?.filter((item: any) => {
@@ -124,7 +122,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
           modules={moduleOptions}
           currentModule={currentMenu}
           onModuleClick={() => setIsModuleSwitcherOpen(true)}
-          onProfileSettingClick={() => router.push('/super/profile')}
+          onProfileSettingClick={() => router.push('/employee/profile')}
           defaultSelectedKeys={
             currentMenu === "MAIN"
               ? ["customers"]

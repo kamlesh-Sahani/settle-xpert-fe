@@ -1,11 +1,33 @@
 import { create } from 'zustand';
 
+interface UserAddress {
+  line1?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  zip?: string;
+}
+
 interface User {
   id: string;
+  teamId?: string;
   name: string;
   email: string;
+  phone?: string;
   status: string;
   roleId: string;
+  roleName?: string;
+  logo?: string;
+  dob?: string;
+  gender?: string;
+  fatherName?: string;
+  motherName?: string;
+  panCard?: string;
+  dateOfJoining?: string;
+  aadharNumber?: string;
+  aadharFront?: string;
+  aadharBack?: string;
+  address?: UserAddress;
 }
 
 interface Webhooks {
@@ -75,7 +97,7 @@ export const useUserStore = create<UserState>((set, get) => {
         }
 
         const pathname = window.location.pathname;
-        const isPublicRoute = ['/login', '/register', '/verify-otp', '/verify'].some((route) =>
+        const isPublicRoute = ['/login', '/register', '/verify'].some((route) =>
           pathname.startsWith(route)
         );
 

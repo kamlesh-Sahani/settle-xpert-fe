@@ -22,12 +22,9 @@ let refreshPromise: Promise<boolean> | null = null;
 
 const isAuthEndpoint = (url: string = "") => {
   return (
-    url.includes("/api/v1/users/login") ||
-    url.includes("/api/v1/users/login-otp") ||
-    url.includes("/api/v1/users/reset-password") ||
-    url.includes("/api/v1/users/logout") ||
-    url.includes("/api/v1/users/refresh") ||
-    url.includes("/api/v1/otp/")
+    url.includes("/api/v1/team/login") ||
+    url.includes("/api/v1/team/logout") ||
+    url.includes("/api/v1/team/refresh")
   );
 };
 
@@ -38,7 +35,7 @@ const refreshAccessToken = async (): Promise<boolean> => {
 
   refreshPromise = (async () => {
     try {
-      const res = await authClient.post("/api/v1/users/refresh");
+      const res = await authClient.post("/api/v1/team/refresh");
       return Boolean(res?.status === 200 && (res?.data as any)?.success);
     } catch {
       return false;
@@ -96,21 +93,12 @@ api.onRequest(async (config: VelocityConfig) => {
 });
 
 export const userApi = {
-  getConfig: () => api.get("/api/v1/users/config"),
-  login: (data: any) => api.post("/api/v1/users/login", data),
-  loginWithOtp: (data: { email: string; otpId: string; code: string }) =>
-    api.post("/api/v1/users/login-otp", data),
-  resetPassword: (data: { email: string; otpId: string; code: string; newPassword: string }) =>
-    api.post("/api/v1/users/reset-password", data),
-  logout: () => api.post("/api/v1/users/logout"),
-  refresh: () => api.post("/api/v1/users/refresh"),
-};
-
-export const otpApi = {
-  send: (data: { action: "PASSWORD_RESET" | "LOGIN" | "REGISTRATION" | string; email: string }) =>
-    api.post("/api/v1/otp/send", data),
-  verify: (data: any) =>
-    api.post("/api/v1/otp/verify", data),
+  getConfig: () => api.get("/api/v1/team/config"),
+  login: (data: any) => api.post("/api/v1/team/login", data),
+  logout: () => api.post("/api/v1/team/logout"),
+  refresh: () => api.post("/api/v1/team/refresh"),
+  updateProfile: (data: any) =>
+    api.post("/api/v1/team/update-profile", data),
 };
 
 export const subscriptionApi = {

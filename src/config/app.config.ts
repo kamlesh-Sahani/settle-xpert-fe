@@ -1,6 +1,7 @@
 export const APP_CONFIG = {
-  name: 'DebtCare',
-  shortName: 'DebtCare',
-  description: 'Debt Assistance & Loan Management CRM',
-  company: 'DebtCare Solutions Pvt. Ltd.',
+  name: 'SettleXpert',
+  shortName: 'SettleXpert',
+  description: 'Loan Settlement & Debt Resolution CRM',
+  company: 'SettleXpert (Akaria Innovations)',
+  website: 'https://settlexpert.com',
 };

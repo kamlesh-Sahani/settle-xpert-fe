@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: `${APP_CONFIG.name} | %s`,
     default: `${APP_CONFIG.name} | Employee`,
   },
-  description: `${APP_CONFIG.name} - Debt Assistance & Loan Management CRM Platform.`,
+  description: `${APP_CONFIG.name} - ${APP_CONFIG.description}`,
 };
 
 export default function RootLayout({

@@ -18,8 +18,10 @@ interface User {
 interface StoreState {
   user: User | null;
   appSettings: AppSettings;
+  tenantSettings: AppSettings;
   setUser: (user: User | null) => void;
   setAppSettings: (settings: Partial<AppSettings>) => void;
+  setTenantSettings: (settings: Partial<AppSettings>) => void;
   toggleTheme: () => void;
 }
 
@@ -33,16 +35,26 @@ export const useStore = create<StoreState>()(
         currency: 'USD',
         language: 'en'
       },
+      tenantSettings: {
+        primaryColor: '#e62e4d',
+        mode: 'light',
+        currency: 'USD',
+        language: 'en'
+      },
       setUser: (user) => set({ user }),
-      setAppSettings: (settings) => set((state) => ({
-        appSettings: { ...state.appSettings, ...settings }
-      })),
-      toggleTheme: () => set((state) => ({
-        appSettings: {
-          ...state.appSettings,
-          mode: state.appSettings.mode === 'light' ? 'dark' : 'light'
-        }
-      }))
+      setAppSettings: (settings) => set((state) => {
+        const next = { ...state.appSettings, ...settings };
+        return { appSettings: next, tenantSettings: next };
+      }),
+      setTenantSettings: (settings) => set((state) => {
+        const next = { ...state.tenantSettings, ...settings };
+        return { appSettings: next, tenantSettings: next };
+      }),
+      toggleTheme: () => set((state) => {
+        const nextMode = state.appSettings.mode === 'light' ? 'dark' : 'light';
+        const next = { ...state.appSettings, mode: nextMode as 'light' | 'dark' };
+        return { appSettings: next, tenantSettings: next };
+      })
     }),
     {
       name: 'app-settings-store',

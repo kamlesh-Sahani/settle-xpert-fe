@@ -15,9 +15,9 @@ import type { MenuProps } from "antd";
 import ExchangeIcon from "@/assets/icons/ExchangeIcon";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { LuLogOut } from "react-icons/lu";
 import {
   SettingOutlined,
-  LogoutOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { useUserStore } from "@/store/user.store";
@@ -26,6 +26,8 @@ import { isString, isNotEmptyArray } from "@/common/utils/main.utils";
 import DynamicConfirmationModal from "./DynamicConfirmationModal";
 import { useNavigationStore } from "@/store/useNavigationStore";
 import { APP_CONFIG } from "@/config/app.config";
+import BrandLogo from "@/common/basic/BrandLogo";
+import classNames from "classnames";
 
 /**
  * Build a flat key → route map from nested menu items.
@@ -334,43 +336,56 @@ const DynamicSideBarContent: React.FC<DynamicSideBarProps> = ({
     return filterTree(items as any[]);
   }, [items, searchValue]);
 
+  const userInitials = useMemo(() => {
+    if (!user?.name) return "";
+    const parts = user.name.trim().split(/\s+/);
+    return parts.length > 1
+      ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+      : (parts[0]?.[0]?.toUpperCase() || "");
+  }, [user?.name]);
+
   const popoverContent = (
-    <div className="flex flex-col w-64 p-1">
-      <div className="flex items-center gap-3 p-2">
-        <Avatar size="large" style={{ backgroundColor: "#e62e4d" }}>
-          {user?.name?.[0] || ""}
-          { }
-        </Avatar>
-        <div className="flex flex-col">
-          <span className="font-bold text-sm truncate">
-            {user?.name}
-          </span>
-          <span className="text-xs text-sidebar-text-muted truncate w-40">
-            {user?.email}
+    <div className="flex flex-col w-[268px] overflow-hidden rounded-xl bg-white text-slate-800">
+      <div className="p-3.5 pb-3">
+        <div className="flex items-center gap-3">
+          <Avatar
+            size={40}
+            className="flex-shrink-0 font-bold text-white text-sm"
+            style={{ backgroundColor: "#e11438" }}
+          >
+            {userInitials}
+          </Avatar>
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="font-bold text-sm text-slate-800 truncate leading-snug">
+              {user?.name}
+            </span>
+            <span className="text-xs text-slate-500 truncate leading-tight mt-0.5">
+              {user?.email}
+            </span>
+          </div>
+        </div>
+
+        <div className="border-t border-dashed border-slate-200 my-3" />
+
+        <div className="flex justify-between items-center text-sm px-0.5">
+          <span className="text-slate-500 font-normal">Account Type</span>
+          <span className="font-semibold text-slate-800">
+            {user?.roleName || "Member"}
           </span>
         </div>
       </div>
-      <Divider className="my-2" />
-      <div className="flex justify-between items-center px-2 py-1 text-sm">
-        <span className="text-sidebar-text-muted">Account Type</span>
-        <span className="font-semibold">
-          {user?.roleId === "super" ? "Super Admin" : "Owner"}
-        </span>
-      </div>
-      <Divider className="my-2" />
+
       <div
         onClick={() => {
           setIsPopoverOpen(false);
           setIsLogoutModalOpen(true);
         }}
-        className="flex items-center gap-2 px-2 py-2 text-sm font-semibold cursor-pointer hover:bg-secondary rounded text-sidebar-text transition-colors"
+        className="flex items-center gap-2.5 px-3.5 py-2.5 bg-[#f4f6fa] hover:bg-[#ebedf3] cursor-pointer transition-colors border-t border-slate-100"
       >
-        <LogoutOutlined />
-        <span>
-          Logout{" "}
-          <span className="font-normal text-sidebar-text-muted">
-            From Your Account
-          </span>
+        <LuLogOut className="text-slate-800 text-lg stroke-[2.2]" />
+        <span className="text-xs sm:text-[13px]">
+          <span className="font-bold text-slate-800">Logout</span>{" "}
+          <span className="font-normal text-slate-500">From Your Account</span>
         </span>
       </div>
     </div>
@@ -396,20 +411,8 @@ const DynamicSideBarContent: React.FC<DynamicSideBarProps> = ({
         </Tooltip>
       )}
       {!onlySidebar && (
-        <div className="flex items-center px-4 h-16 shrink-0 border-b border-sidebar-border">
-          <Image
-            src="/logo.png"
-            alt={`${APP_CONFIG.name} Logo`}
-            width={50}
-            height={50}
-            priority
-            className="w-[50px] h-auto object-contain shrink-0"
-          />
-          {!collapsed && (
-            <span className="font-bold text-xl truncate text-sidebar-text tracking-wide">
-              {APP_CONFIG.name}
-            </span>
-          )}
+        <div className="flex items-center px-4 h-16 shrink-0 border-b border-sidebar-border overflow-hidden">
+          <BrandLogo size="md" collapsed={collapsed} />
         </div>
       )}
 
@@ -541,23 +544,22 @@ const DynamicSideBarContent: React.FC<DynamicSideBarProps> = ({
             trigger="click"
             open={isPopoverOpen}
             onOpenChange={setIsPopoverOpen}
+            styles={{ container: { padding: 0, borderRadius: "12px", overflow: "hidden" } }}
           >
             <div
               className={`flex items-center gap-3 py-2 px-4 border-t border-sidebar-border cursor-pointer bg-sidebar-bg hover:bg-sidebar-hover transition-colors ${collapsed ? "justify-center" : ""}`}
             >
               <Avatar
-                size="large"
-                style={{ backgroundColor: "#e62e4d" }}
-                className="h-[30px] w-[30px]  "
+                size={34}
+                className="flex-shrink-0 font-bold text-white text-xs"
+                style={{ backgroundColor: "#e11438" }}
               >
-                {user?.name?.[0] || ""}
-                { }
+                {userInitials}
               </Avatar>
               {!collapsed && (
-                <div className="flex flex-col overflow-hidden flex-1">
+                <div className="flex flex-col min-w-0 flex-1">
                   <span className="font-bold text-sm truncate text-sidebar-text">
-                    {user?.name}{" "}
-
+                    {user?.name}
                   </span>
                   <span className="text-xs text-sidebar-text-muted truncate">
                     {user?.email}
