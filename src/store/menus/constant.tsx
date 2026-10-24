@@ -9,6 +9,7 @@ import {
   CheckSquareOutlined,
   BankOutlined,
   ApiOutlined,
+  ApartmentOutlined,
 } from "@ant-design/icons";
 import MetaIcon from "@/assets/icons/MetaIcon";
 
@@ -78,6 +79,13 @@ export const adminMenu = [
     label: "Employees",
     route: "/admin/employee" as any,
     permission: "employee:read",
+  },
+  {
+    key: "departments",
+    icon: <ApartmentOutlined className="text-[17px]" />,
+    label: "Departments",
+    route: "/admin/departments" as any,
+    permission: "department:read",
   },
   {
     key: "role-management",

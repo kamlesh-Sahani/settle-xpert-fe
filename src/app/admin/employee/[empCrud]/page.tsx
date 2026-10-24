@@ -41,6 +41,7 @@ const EmployeeCrud = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<SubmitStatusType | null>(null);
     const [roleInitialValue, setRoleInitialValue] = useState<any[]>([]);
+    const [departmentInitialValue, setDepartmentInitialValue] = useState<any[]>([]);
     const [isStatusUpdating, setIsStatusUpdating] = useState(false);
     const [pendingStatus, setPendingStatus] = useState<"ACTIVE" | "SUSPENDED" | null>(null);
     const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
@@ -69,6 +70,7 @@ const EmployeeCrud = () => {
             email: "",
             password: "",
             roleId: "",
+            departmentId: "",
             status: "ACTIVE",
             logo: [],
             dob: "",
@@ -111,6 +113,7 @@ const EmployeeCrud = () => {
                 name: empData.name || "",
                 email: empData.email || "",
                 roleId: empData.roleId || "",
+                departmentId: empData.departmentId || "",
                 status: empData.status || "ACTIVE",
                 password: "",
                 logo: empData.logo ? [{ uid: '-1', name: 'logo.png', status: 'done', url: empData.logo }] : [],
@@ -138,6 +141,16 @@ const EmployeeCrud = () => {
                         key: empData.roleId,
                         value: empData.roleName || "Selected Role",
                         link: `/admin/roles/${empData.roleId}`,
+                    }
+                ]);
+            }
+
+            if (empData.departmentId) {
+                setDepartmentInitialValue([
+                    {
+                        key: empData.departmentId,
+                        value: empData.departmentName || "Selected Department",
+                        link: `/admin/departments/${empData.departmentId}`,
                     }
                 ]);
             }
@@ -169,6 +182,7 @@ const EmployeeCrud = () => {
                 name: formData.name,
                 email: formData.email,
                 roleId: formData.roleId,
+                departmentId: formData.departmentId,
                 status: formData.status,
                 logo: extractUrl(formData.logo),
                 dob: formData.dob || "",
@@ -386,6 +400,22 @@ const EmployeeCrud = () => {
                                                         create={{
                                                             label: "Create Role",
                                                             onClick: () => router.push("/admin/roles/create?selectedMenu=role-management"),
+                                                        }}
+                                                    />
+                                                </div>
+
+                                                <div className="flex flex-col">
+                                                    <LabelField required>Department</LabelField>
+                                                    <SelectApiField
+                                                        id="departmentId"
+                                                        control={control as any}
+                                                        apiUrl="/api/v1/departments/key-values"
+                                                        method="POST"
+                                                        initialValue={departmentInitialValue}
+                                                        placeholder="Select a department"
+                                                        create={{
+                                                            label: "Create Department",
+                                                            onClick: () => router.push("/admin/departments/create?selectedMenu=departments"),
                                                         }}
                                                     />
                                                 </div>

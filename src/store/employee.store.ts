@@ -17,6 +17,8 @@ export interface Employee {
   status: string;
   roleId: string;
   roleName?: string;
+  departmentId?: string;
+  departmentName?: string;
   logo?: string;
   dob?: string;
   gender?: string;

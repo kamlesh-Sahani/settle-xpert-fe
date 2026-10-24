@@ -368,9 +368,9 @@ const DynamicSideBarContent: React.FC<DynamicSideBarProps> = ({
         <div className="border-t border-dashed border-slate-200 my-3" />
 
         <div className="flex justify-between items-center text-sm px-0.5">
-          <span className="text-slate-500 font-normal">Account Type</span>
+          <span className="text-slate-500 font-normal">Department</span>
           <span className="font-semibold text-slate-800">
-            {employee?.roleName || "Member"}
+            {employee?.departmentName || "General"}
           </span>
         </div>
       </div>

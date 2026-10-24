@@ -22,6 +22,7 @@ export const getEmployeeSchema = (isEditing: boolean) =>
                 }
             ),
         roleId: z.string().min(1, "Role is required"),
+        departmentId: z.string().min(1, "Department is required"),
         status: z.string().default("ACTIVE"),
         logo: z.any().optional(),
         dob: z.preprocess(
