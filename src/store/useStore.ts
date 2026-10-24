@@ -8,18 +8,9 @@ interface AppSettings {
   language: string;
 }
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
 interface StoreState {
-  user: User | null;
   appSettings: AppSettings;
   tenantSettings: AppSettings;
-  setUser: (user: User | null) => void;
   setAppSettings: (settings: Partial<AppSettings>) => void;
   setTenantSettings: (settings: Partial<AppSettings>) => void;
   toggleTheme: () => void;
@@ -28,7 +19,6 @@ interface StoreState {
 export const useStore = create<StoreState>()(
   persist(
     (set) => ({
-      user: null,
       appSettings: {
         primaryColor: '#e62e4d',
         mode: 'light',
@@ -41,7 +31,6 @@ export const useStore = create<StoreState>()(
         currency: 'USD',
         language: 'en'
       },
-      setUser: (user) => set({ user }),
       setAppSettings: (settings) => set((state) => {
         const next = { ...state.appSettings, ...settings };
         return { appSettings: next, tenantSettings: next };

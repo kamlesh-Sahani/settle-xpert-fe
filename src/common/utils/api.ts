@@ -1,5 +1,5 @@
 import Velocity, { type VelocityConfig } from "velocity-http";
-import { useUserStore } from "@/store/user.store";
+import { useEmployeeStore } from "@/store/employee.store";
 
 export interface responseType<T = unknown> {
   success: boolean;
@@ -22,9 +22,9 @@ let refreshPromise: Promise<boolean> | null = null;
 
 const isAuthEndpoint = (url: string = "") => {
   return (
-    url.includes("/api/v1/team/login") ||
-    url.includes("/api/v1/team/logout") ||
-    url.includes("/api/v1/team/refresh")
+    url.includes("/api/v1/emp/login") ||
+    url.includes("/api/v1/emp/logout") ||
+    url.includes("/api/v1/emp/refresh")
   );
 };
 
@@ -35,7 +35,7 @@ const refreshAccessToken = async (): Promise<boolean> => {
 
   refreshPromise = (async () => {
     try {
-      const res = await authClient.post("/api/v1/team/refresh");
+      const res = await authClient.post("/api/v1/emp/refresh");
       return Boolean(res?.status === 200 && (res?.data as any)?.success);
     } catch {
       return false;
@@ -73,7 +73,7 @@ const api = new Velocity({
 
       if (!refreshed) {
         // Refresh token expired or revoked -> cleanly expire session
-        useUserStore.getState().handleSessionExpired();
+        useEmployeeStore.getState().handleSessionExpired();
         return false;
       }
 
@@ -92,13 +92,13 @@ api.onRequest(async (config: VelocityConfig) => {
   return config;
 });
 
-export const userApi = {
-  getConfig: () => api.get("/api/v1/team/config"),
-  login: (data: any) => api.post("/api/v1/team/login", data),
-  logout: () => api.post("/api/v1/team/logout"),
-  refresh: () => api.post("/api/v1/team/refresh"),
+export const employeeApi = {
+  getConfig: () => api.get("/api/v1/emp/config"),
+  login: (data: any) => api.post("/api/v1/emp/login", data),
+  logout: () => api.post("/api/v1/emp/logout"),
+  refresh: () => api.post("/api/v1/emp/refresh"),
   updateProfile: (data: any) =>
-    api.post("/api/v1/team/update-profile", data),
+    api.post("/api/v1/emp/update-profile", data),
 };
 
 export const subscriptionApi = {

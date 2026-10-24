@@ -26,7 +26,7 @@ export interface WebhookLog {
   createdAt: string;
 }
 
-export interface UserOption {
+export interface EmployeeOption {
   key: string;
   value: string;
   email?: string;

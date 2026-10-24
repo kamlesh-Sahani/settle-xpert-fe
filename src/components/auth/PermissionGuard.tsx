@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useUserStore } from '@/store/user.store';
+import { useEmployeeStore } from '@/store/employee.store';
 import { isArray } from '@/common/utils/main.utils';
 
 interface PermissionGuardProps {
@@ -12,17 +12,17 @@ interface PermissionGuardProps {
 }
 
 export const hasPermission = (requiredPerm: string) => {
-  const { user, permissions } = useUserStore.getState();
-  if (!user) return false;
+  const { employee, permissions } = useEmployeeStore.getState();
+  if (!employee) return false;
   return permissions.has(requiredPerm);
 };
 
 export function usePermission(required: string | string[]): boolean {
-  const isInitialized = useUserStore((state) => state.isInitialized);
-  const user = useUserStore((state) => state.user);
-  const permissions = useUserStore((state) => state.permissions);
+  const isInitialized = useEmployeeStore((state) => state.isInitialized);
+  const employee = useEmployeeStore((state) => state.employee);
+  const permissions = useEmployeeStore((state) => state.permissions);
 
-  if (!isInitialized || !user) return false;
+  if (!isInitialized || !employee) return false;
 
   const check = (perm: string) => permissions.has(perm);
 
@@ -37,10 +37,10 @@ export default function PermissionGuard({
   fallback = null,
   loadingFallback = null
 }: PermissionGuardProps) {
-  const isInitialized = useUserStore((state) => state.isInitialized);
-  // Subscribe to user and permissions to trigger re-renders on change
-  useUserStore((state) => state.user);
-  useUserStore((state) => state.permissions);
+  const isInitialized = useEmployeeStore((state) => state.isInitialized);
+  // Subscribe to employee and permissions to trigger re-renders on change
+  useEmployeeStore((state) => state.employee);
+  useEmployeeStore((state) => state.permissions);
 
   if (!isInitialized) {
     return <>{loadingFallback}</>;

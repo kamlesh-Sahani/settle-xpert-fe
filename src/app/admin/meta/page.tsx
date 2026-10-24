@@ -10,7 +10,7 @@ import DynamicHeader from "@/common/dynamic/DynamicHeader";
 import ButtonField from "@/common/basic/ButtonField";
 import LoadingSpinner from "@/common/basic/LoadingSpinner";
 import { ErrorApi } from "@/common/ui/ErrorApi";
-import { useUserStore } from "@/store/user.store";
+import { useEmployeeStore } from "@/store/employee.store";
 import { usePermission } from "@/components/auth/PermissionGuard";
 import { Detail, Logs, MetaConfig } from "./tab";
 
@@ -31,7 +31,7 @@ export default function IntegrationsPage() {
   const [config, setConfig] = useState<MetaConfig | null>(null);
   const [logsRefreshTrigger, setLogsRefreshTrigger] = useState(0);
 
-  const webhookUrl = useUserStore((state) => state.webhooks?.meta);
+  const webhookUrl = useEmployeeStore((state) => state.webhooks?.meta);
   const canUpdate = usePermission("meta:update");
 
   const {

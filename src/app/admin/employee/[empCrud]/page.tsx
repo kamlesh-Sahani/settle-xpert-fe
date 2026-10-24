@@ -12,7 +12,7 @@ import ButtonField from "@/common/basic/ButtonField";
 import FormStatusMessage, { SubmitStatusType } from "@/common/form/FormStatusMessage";
 import { ErrorApi } from "@/common/ui/ErrorApi";
 
-import { getMemberSchema, MemberSchema } from './schema';
+import { getEmployeeSchema, EmployeeSchema } from './schema';
 import InputField from '@/common/form/InputField';
 import SelectField from '@/common/form/SelectField';
 import SelectApiField from '@/common/form/SelectApiField';
@@ -21,22 +21,22 @@ import LabelField from "@/common/form/LabelField";
 import DateField from "@/common/form/DateField";
 import CountryField from "@/common/form/CountryField";
 import TextAreaField from "@/common/form/TextAreaField";
-import TeamHeaderActions from './components/TeamHeaderActions';
+import EmployeeHeaderActions from './components/EmployeeHeaderActions';
 import DynamicAuditModal from "@/common/dynamic/DynamicAuditModal";
 import { usePermission } from "@/components/auth/PermissionGuard";
 import DynamicConfirmationModal from "@/common/dynamic/DynamicConfirmationModal";
 import { App } from "antd";
 
-const filterKey = 'admin-team-create';
+const filterKey = 'admin-employee-create';
 
-const TeamCrud = () => {
+const EmployeeCrud = () => {
     const { message } = App.useApp();
     const params = useParams();
     const router = useRouter();
 
-    const teamMemberId = (params?.teamCrud || params?.memberCrud) as string;
-    const isEditing = Boolean(teamMemberId && teamMemberId !== 'create');
-    const subTitles = isEditing ? ["Update Team Member"] : ["Create New Team Member"];
+    const empId = params?.empCrud as string;
+    const isEditing = Boolean(empId && empId !== 'create');
+    const subTitles = isEditing ? ["Update Employee"] : ["Create New Employee"];
 
     const [isSaving, setIsSaving] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<SubmitStatusType | null>(null);
@@ -46,25 +46,25 @@ const TeamCrud = () => {
     const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
     const [statusModalFeedback, setStatusModalFeedback] = useState<SubmitStatusType | null>(null);
     const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
-    const canViewAudit = usePermission("member:audit") || usePermission("member:read");
+    const canViewAudit = usePermission("employee:audit") || usePermission("employee:read");
 
     const { data: fetchResponse, loading: isFetching, error, refetch } = useFetch({
         client: api.get,
-        url: `/api/v1/team/get`,
+        url: `/api/v1/emp/get`,
         options: {
             params: {
-                id: teamMemberId
+                id: empId
             }
         },
         dontCall: !isEditing
     });
 
-    const memberData = (fetchResponse as any)?.data;
+    const empData = (fetchResponse as any)?.data;
 
-    const methods = useForm<MemberSchema>({
-        resolver: zodResolver(getMemberSchema(isEditing)) as any,
+    const methods = useForm<EmployeeSchema>({
+        resolver: zodResolver(getEmployeeSchema(isEditing)) as any,
         defaultValues: {
-            teamId: "",
+            empId: "",
             name: "",
             email: "",
             password: "",
@@ -92,57 +92,57 @@ const TeamCrud = () => {
 
     const { control, handleSubmit, reset, setValue, formState: { isDirty } } = methods;
 
-    // Fetch auto-generated team id for new team member
+    // Fetch auto-generated employee id for new employee
     const { refetch: refetchNextIden } = useFetch({
         client: api.get,
-        url: "/api/v1/team/next-iden",
+        url: "/api/v1/emp/next-iden",
         dontCall: isEditing,
         onSuccess: (res: any) => {
-            if (res?.success && (res?.data?.teamId || res?.data?.iden)) {
-                setValue("teamId", res.data.teamId || res.data.iden, { shouldDirty: false });
+            if (res?.success && res?.data?.empId) {
+                setValue("empId", res.data.empId, { shouldDirty: false });
             }
         },
     });
 
     useEffect(() => {
-        if (memberData && isEditing) {
+        if (empData && isEditing) {
             reset({
-                teamId: memberData.teamId || "",
-                name: memberData.name || "",
-                email: memberData.email || "",
-                roleId: memberData.roleId || "",
-                status: memberData.status || "ACTIVE",
-                password: "", // Leave blank for edit
-                logo: memberData.logo ? [{ uid: '-1', name: 'logo.png', status: 'done', url: memberData.logo }] : [],
-                dob: memberData.dob || "",
-                gender: memberData.gender || "",
-                fatherName: memberData.fatherName || "",
-                motherName: memberData.motherName || "",
-                panCard: memberData.panCard || "",
-                dateOfJoining: memberData.dateOfJoining || "",
-                aadharNumber: memberData.aadharNumber || "",
-                aadharFront: memberData.aadharFront ? [{ uid: '-2', name: 'aadhar-front.png', status: 'done', url: memberData.aadharFront }] : [],
-                aadharBack: memberData.aadharBack ? [{ uid: '-3', name: 'aadhar-back.png', status: 'done', url: memberData.aadharBack }] : [],
+                empId: empData.empId || "",
+                name: empData.name || "",
+                email: empData.email || "",
+                roleId: empData.roleId || "",
+                status: empData.status || "ACTIVE",
+                password: "",
+                logo: empData.logo ? [{ uid: '-1', name: 'logo.png', status: 'done', url: empData.logo }] : [],
+                dob: empData.dob || "",
+                gender: empData.gender || "",
+                fatherName: empData.fatherName || "",
+                motherName: empData.motherName || "",
+                panCard: empData.panCard || "",
+                dateOfJoining: empData.dateOfJoining || "",
+                aadharNumber: empData.aadharNumber || "",
+                aadharFront: empData.aadharFront ? [{ uid: '-2', name: 'aadhar-front.png', status: 'done', url: empData.aadharFront }] : [],
+                aadharBack: empData.aadharBack ? [{ uid: '-3', name: 'aadhar-back.png', status: 'done', url: empData.aadharBack }] : [],
                 address: {
-                    line1: memberData.address?.line1 || "",
-                    country: memberData.address?.country || "",
-                    state: memberData.address?.state || "",
-                    city: memberData.address?.city || "",
-                    zip: memberData.address?.zip || "",
+                    line1: empData.address?.line1 || "",
+                    country: empData.address?.country || "",
+                    state: empData.address?.state || "",
+                    city: empData.address?.city || "",
+                    zip: empData.address?.zip || "",
                 },
             });
 
-            if (memberData.roleId) {
+            if (empData.roleId) {
                 setRoleInitialValue([
                     {
-                        key: memberData.roleId,
-                        value: memberData.roleName || "Selected Role",
-                        link: `/admin/roles/${memberData.roleId}`,
+                        key: empData.roleId,
+                        value: empData.roleName || "Selected Role",
+                        link: `/admin/roles/${empData.roleId}`,
                     }
                 ]);
             }
         }
-    }, [memberData, isEditing, reset]);
+    }, [empData, isEditing, reset]);
 
     const handleRefresh = () => {
         if (isEditing) {
@@ -160,14 +160,15 @@ const TeamCrud = () => {
         return "";
     };
 
-    const onSubmit = async (formData: MemberSchema) => {
+    const onSubmit = async (formData: EmployeeSchema) => {
         setSubmitStatus(null);
         setIsSaving(true);
         try {
             const payload: any = {
-                teamId: formData.teamId,
+                empId: formData.empId || "",
                 name: formData.name,
                 email: formData.email,
+                roleId: formData.roleId,
                 status: formData.status,
                 logo: extractUrl(formData.logo),
                 dob: formData.dob || "",
@@ -188,14 +189,10 @@ const TeamCrud = () => {
                 },
             };
 
-            if (formData.roleId && formData.roleId.trim() !== "") {
-                payload.roleId = formData.roleId;
-            }
-
-            const apiUrl = isEditing ? `/api/v1/team/update` : `/api/v1/team/create`;
+            const apiUrl = isEditing ? `/api/v1/emp/update` : `/api/v1/emp/create`;
             
             if (isEditing) {
-                payload.userId = teamMemberId;
+                payload.id = empId;
                 if (formData.password && formData.password.trim() !== "") {
                     payload.password = formData.password.trim();
                 }
@@ -206,12 +203,12 @@ const TeamCrud = () => {
             const response = await api.post(apiUrl, payload);
 
             if (response.data?.success) {
-                setSubmitStatus({ type: 'success', text: `Team member ${isEditing ? 'updated' : 'created'} successfully!` });
+                setSubmitStatus({ type: 'success', text: `Employee ${isEditing ? 'updated' : 'created'} successfully!` });
                 setTimeout(() => {
-                    router.push(`/admin/team`);
+                    router.push(`/admin/employee`);
                 }, 1500);
             } else {
-                setSubmitStatus({ type: 'error', text: response.data?.message || "Failed to save team member" });
+                setSubmitStatus({ type: 'error', text: response.data?.message || "Failed to save employee" });
             }
         } catch (error) {
             setSubmitStatus({ type: 'error', text: responseError(error) || "An unexpected error occurred" });
@@ -247,8 +244,8 @@ const TeamCrud = () => {
         setIsStatusUpdating(true);
         setStatusModalFeedback(null);
         try {
-            const res = await api.post("/api/v1/team/status", {
-                userId: teamMemberId,
+            const res = await api.post("/api/v1/emp/status", {
+                id: empId,
                 status: pendingStatus,
             });
             if (res.data?.success) {
@@ -278,13 +275,13 @@ const TeamCrud = () => {
     return (
         <div className="flex flex-col h-full bg-background">
             <DynamicHeader
-                title="Team"
+                title="Employees"
                 subTitles={subTitles}
                 filterKey={filterKey}
                 onRefresh={handleRefresh}
                 rightSection={
                     isEditing ? (
-                        <TeamHeaderActions
+                        <EmployeeHeaderActions
                             currentStatus={currentStatus}
                             isStatusUpdating={isStatusUpdating}
                             canViewAudit={canViewAudit}
@@ -303,18 +300,17 @@ const TeamCrud = () => {
                 ) : error ? (
                     <div className="h-full w-full flex items-center justify-center">
                         <ErrorApi
-                            title="Failed to load team member"
-                            message={responseError(error) || "Could not fetch team member details."}
+                            title="Failed to load employee"
+                            message={responseError(error) || "Could not fetch employee details."}
                             onRetry={refetch}
                         />
                     </div>
                 ) : (
                     <FormProvider {...methods}>
                         <form onSubmit={handleSubmit(onSubmit)} autoComplete="off" className="flex flex-col h-full relative w-full">
-                            {/* Dummy inputs to prevent browser login autofill heuristic */}
                             <input
                                 type="text"
-                                name="fake_username_prevent_autofill"
+                                name="fake_email_prevent_autofill"
                                 style={{ position: "absolute", opacity: 0, height: 0, width: 0, zIndex: -1, pointerEvents: "none" }}
                                 tabIndex={-1}
                                 aria-hidden="true"
@@ -336,12 +332,11 @@ const TeamCrud = () => {
                                     <div>
                                         <h3 className="text-base font-bold text-text-primary mb-4">Basic Information</h3>
                                         <div className="flex flex-col xl:flex-row gap-x-6 gap-y-5 items-start">
-                                            {/* Left Fields */}
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 w-full max-w-[536px]">
                                                 <div className="flex flex-col">
-                                                    <LabelField tooltip="Auto-generated team identifier">Team ID</LabelField>
+                                                    <LabelField tooltip="Auto-generated employee identifier">Employee ID</LabelField>
                                                     <InputField 
-                                                        id="teamId" 
+                                                        id="empId" 
                                                         control={control as any} 
                                                         placeholder="Auto-generating..." 
                                                         disabled={true} 
@@ -396,7 +391,6 @@ const TeamCrud = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Right Side: Photo Upload */}
                                             <div className="w-full md:w-[256px] shrink-0 flex flex-col">
                                                 <LabelField>Profile Photo</LabelField>
                                                 <div className="mt-1 h-full">
@@ -407,7 +401,7 @@ const TeamCrud = () => {
                                                         title="Upload Photo"
                                                         subtitle="PNG, JPG up to 5MB"
                                                         accept=".png,.jpg,.jpeg"
-                                                        folder="team/avatars"
+                                                        folder="employee/avatars"
                                                     />
                                                 </div>
                                             </div>
@@ -497,7 +491,6 @@ const TeamCrud = () => {
                                             </div>
                                         </div>
 
-                                        {/* Aadhar Front and Back Upload Fields */}
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-[536px]">
                                             <div className="flex flex-col">
                                                 <LabelField>
@@ -511,7 +504,7 @@ const TeamCrud = () => {
                                                         title="Upload Front Side"
                                                         subtitle="PNG, JPG or PDF up to 5MB"
                                                         accept=".png,.jpg,.jpeg,.pdf"
-                                                        folder="team/documents"
+                                                        folder="employee/documents"
                                                     />
                                                 </div>
                                             </div>
@@ -528,7 +521,7 @@ const TeamCrud = () => {
                                                         title="Upload Back Side"
                                                         subtitle="PNG, JPG or PDF up to 5MB"
                                                         accept=".png,.jpg,.jpeg,.pdf"
-                                                        folder="team/documents"
+                                                        folder="employee/documents"
                                                     />
                                                 </div>
                                             </div>
@@ -619,7 +612,7 @@ const TeamCrud = () => {
                                     disabled={!isDirty && isEditing}
                                     className="min-w-[150px] rounded-lg shadow-sm"
                                 >
-                                    {isEditing ? "Update Details" : "Create Team Member"}
+                                    {isEditing ? "Update Details" : "Create Employee"}
                                 </ButtonField>
                             </div>
                         </form>
@@ -637,8 +630,8 @@ const TeamCrud = () => {
                     onDismissStatus={() => setStatusModalFeedback(null)}
                     title={
                         pendingStatus === "SUSPENDED"
-                            ? "Sure You Want to Suspend This Team Member?"
-                            : "Sure You Want to Activate This Team Member?"
+                            ? "Sure You Want to Suspend This Employee?"
+                            : "Sure You Want to Activate This Employee?"
                     }
                     message={
                         <div className="flex flex-col gap-2">
@@ -651,7 +644,7 @@ const TeamCrud = () => {
                                     <>
                                         {" "}for{" "}
                                         <span className="font-semibold text-text-primary">
-                                            "{methods.watch("name")}"
+                                            &quot;{methods.watch("name")}&quot;
                                         </span>
                                     </>
                                 ) : null}
@@ -659,8 +652,8 @@ const TeamCrud = () => {
                             </p>
                             <p className="text-xs text-text-secondary m-0">
                                 {pendingStatus === "SUSPENDED"
-                                    ? "Suspended members cannot log in and will have their active sessions revoked immediately."
-                                    : "Active members can log in and access features based on their assigned role."}
+                                    ? "Suspended employees cannot log in and will have their active sessions revoked immediately."
+                                    : "Active employees can log in and access features based on their assigned role."}
                             </p>
                         </div>
                     }
@@ -673,15 +666,15 @@ const TeamCrud = () => {
                 <DynamicAuditModal
                     isOpen={isAuditModalOpen}
                     onClose={() => setIsAuditModalOpen(false)}
-                    entityId={teamMemberId}
-                    entityType="team"
+                    entityId={empId}
+                    entityType="employee"
                     title="Audit History"
-                    apiUrl="/api/v1/team/audit-history"
-                    permission={canViewAudit ? undefined : "member:audit"}
+                    apiUrl="/api/v1/emp/audit-history"
+                    permission={canViewAudit ? undefined : "employee:audit"}
                 />
             )}
         </div>
     );
 };
 
-export default TeamCrud;
+export default EmployeeCrud;

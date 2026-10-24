@@ -20,8 +20,8 @@ import {
   SettingOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { useUserStore } from "@/store/user.store";
-import { userApi } from "@/common/utils/api";
+import { useEmployeeStore } from "@/store/employee.store";
+import { employeeApi } from "@/common/utils/api";
 import { isString, isNotEmptyArray } from "@/common/utils/main.utils";
 import DynamicConfirmationModal from "./DynamicConfirmationModal";
 import { useNavigationStore } from "@/store/useNavigationStore";
@@ -105,19 +105,19 @@ const DynamicSideBarContent: React.FC<DynamicSideBarProps> = ({
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
   const [pendingRouteEvent, setPendingRouteEvent] = useState<any>(null);
 
-  const { user, clearUserData } = useUserStore((state) => state);
+  const { employee, clearEmployeeData } = useEmployeeStore((state) => state);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await userApi.logout();
-      clearUserData();
+      await employeeApi.logout();
+      clearEmployeeData();
       message.success("Logged out successfully");
       const callbackUrl = encodeURIComponent(window.location.pathname + window.location.search);
       router.push(`/login?callbackUrl=${callbackUrl}`);
     } catch (error) {
       console.error("Logout failed on backend", error);
-      clearUserData();
+      clearEmployeeData();
       message.success("Logged out successfully");
       const callbackUrl = encodeURIComponent(window.location.pathname + window.location.search);
       router.push(`/login?callbackUrl=${callbackUrl}`);
@@ -336,13 +336,13 @@ const DynamicSideBarContent: React.FC<DynamicSideBarProps> = ({
     return filterTree(items as any[]);
   }, [items, searchValue]);
 
-  const userInitials = useMemo(() => {
-    if (!user?.name) return "";
-    const parts = user.name.trim().split(/\s+/);
+  const employeeInitials = useMemo(() => {
+    if (!employee?.name) return "";
+    const parts = employee.name.trim().split(/\s+/);
     return parts.length > 1
       ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
       : (parts[0]?.[0]?.toUpperCase() || "");
-  }, [user?.name]);
+  }, [employee?.name]);
 
   const popoverContent = (
     <div className="flex flex-col w-[268px] overflow-hidden rounded-xl bg-white text-slate-800">
@@ -353,14 +353,14 @@ const DynamicSideBarContent: React.FC<DynamicSideBarProps> = ({
             className="flex-shrink-0 font-bold text-white text-sm"
             style={{ backgroundColor: "#e11438" }}
           >
-            {userInitials}
+            {employeeInitials}
           </Avatar>
           <div className="flex flex-col min-w-0 flex-1">
             <span className="font-bold text-sm text-slate-800 truncate leading-snug">
-              {user?.name}
+              {employee?.name}
             </span>
             <span className="text-xs text-slate-500 truncate leading-tight mt-0.5">
-              {user?.email}
+              {employee?.email}
             </span>
           </div>
         </div>
@@ -370,7 +370,7 @@ const DynamicSideBarContent: React.FC<DynamicSideBarProps> = ({
         <div className="flex justify-between items-center text-sm px-0.5">
           <span className="text-slate-500 font-normal">Account Type</span>
           <span className="font-semibold text-slate-800">
-            {user?.roleName || "Member"}
+            {employee?.roleName || "Member"}
           </span>
         </div>
       </div>
@@ -554,15 +554,15 @@ const DynamicSideBarContent: React.FC<DynamicSideBarProps> = ({
                 className="flex-shrink-0 font-bold text-white text-xs"
                 style={{ backgroundColor: "#e11438" }}
               >
-                {userInitials}
+                {employeeInitials}
               </Avatar>
               {!collapsed && (
                 <div className="flex flex-col min-w-0 flex-1">
                   <span className="font-bold text-sm truncate text-sidebar-text">
-                    {user?.name}
+                    {employee?.name}
                   </span>
                   <span className="text-xs text-sidebar-text-muted truncate">
-                    {user?.email}
+                    {employee?.email}
                   </span>
                 </div>
               )}

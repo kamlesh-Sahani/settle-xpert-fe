@@ -1,7 +1,7 @@
 import {
   AppstoreOutlined,
   TeamOutlined,
-  UserOutlined,
+  ContactsOutlined,
   FolderOpenOutlined,
   SafetyCertificateOutlined,
   AlertOutlined,
@@ -22,7 +22,7 @@ export const mainMenu = [
   },
   {
     key: "leads",
-    icon: <UserOutlined className="text-[17px]" />,
+    icon: <ContactsOutlined className="text-[17px]" />,
     label: "Leads",
     route: "/leads" as any,
     permission: "lead:read",
@@ -73,11 +73,11 @@ export const mainMenu = [
 
 export const adminMenu = [
   {
-    key: "team",
+    key: "employee",
     icon: <TeamOutlined className="text-[17px]" />,
-    label: "Team",
-    route: "/admin/team" as any,
-    permission: "member:read",
+    label: "Employees",
+    route: "/admin/employee" as any,
+    permission: "employee:read",
   },
   {
     key: "role-management",

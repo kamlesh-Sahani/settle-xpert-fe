@@ -5,7 +5,7 @@ import { ColorPicker, App, Tooltip } from "antd";
 
 import { useStore } from "@/store/useStore";
 import { useThemeStore } from "@/store/theme/theme.store";
-import { useUserStore } from "@/store/user.store";
+import { useEmployeeStore } from "@/store/employee.store";
 import classNames from "classnames";
 import DynamicHeader from "@/common/dynamic/DynamicHeader";
 import { useForm, FormProvider } from "react-hook-form";
@@ -21,10 +21,10 @@ import UploadField from "@/common/form/upload/UploadField";
 import LabelField from "@/common/form/LabelField";
 import ButtonField from "@/common/basic/ButtonField";
 import { responseError } from "@/common/utils/main.utils";
-import { userApi } from "@/common/utils/api";
+import { employeeApi } from "@/common/utils/api";
 
 const profileSchema = z.object({
-    teamId: z.string().optional(),
+    empId: z.string().optional(),
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Please enter a valid email address"),
     phone: z.string().optional(),
@@ -94,14 +94,14 @@ const extractUrl = (fileVal: any): string => {
 export default function ProfilePage() {
     const { tenantSettings, setTenantSettings } = useStore();
     const { primaryColor, setPrimaryColor, sidebarColor, setSidebarColor, setTheme } = useThemeStore();
-    const { user, permissions, setUserData } = useUserStore();
+    const { employee, permissions, setEmployeeData } = useEmployeeStore();
     const { message } = App.useApp();
     const [isLoading, setIsLoading] = React.useState(false);
 
     const methods = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            teamId: "",
+            empId: "",
             name: "",
             email: "",
             phone: "",
@@ -133,9 +133,9 @@ export default function ProfilePage() {
 
     const reloadConfig = async () => {
         try {
-            const res = await userApi.getConfig();
+            const res = await employeeApi.getConfig();
             if (res.data?.success && res.data?.data) {
-                setUserData(res.data.data);
+                setEmployeeData(res.data.data);
             }
         } catch {
             // ignore
@@ -143,36 +143,36 @@ export default function ProfilePage() {
     };
 
     useEffect(() => {
-        if (user) {
+        if (employee) {
             reset({
-                teamId: user.teamId || "",
-                name: user.name || "",
-                email: user.email || "",
-                phone: user.phone || "",
-                roleName: user.roleName || "",
-                logo: user.logo ? [{ uid: '-1', name: 'logo.png', status: 'done', url: user.logo }] : [],
-                dob: user.dob || "",
-                gender: user.gender || "",
-                fatherName: user.fatherName || "",
-                motherName: user.motherName || "",
-                panCard: user.panCard || "",
-                dateOfJoining: user.dateOfJoining || "",
-                aadharNumber: user.aadharNumber || "",
-                aadharFront: user.aadharFront ? [{ uid: '-2', name: 'aadhar-front.png', status: 'done', url: user.aadharFront }] : [],
-                aadharBack: user.aadharBack ? [{ uid: '-3', name: 'aadhar-back.png', status: 'done', url: user.aadharBack }] : [],
+                empId: employee.empId || "",
+                name: employee.name || "",
+                email: employee.email || "",
+                phone: employee.phone || "",
+                roleName: employee.roleName || "",
+                logo: employee.logo ? [{ uid: '-1', name: 'logo.png', status: 'done', url: employee.logo }] : [],
+                dob: employee.dob || "",
+                gender: employee.gender || "",
+                fatherName: employee.fatherName || "",
+                motherName: employee.motherName || "",
+                panCard: employee.panCard || "",
+                dateOfJoining: employee.dateOfJoining || "",
+                aadharNumber: employee.aadharNumber || "",
+                aadharFront: employee.aadharFront ? [{ uid: '-2', name: 'aadhar-front.png', status: 'done', url: employee.aadharFront }] : [],
+                aadharBack: employee.aadharBack ? [{ uid: '-3', name: 'aadhar-back.png', status: 'done', url: employee.aadharBack }] : [],
                 address: {
-                    line1: user.address?.line1 || "",
-                    country: user.address?.country || "",
-                    state: user.address?.state || "",
-                    city: user.address?.city || "",
-                    zip: user.address?.zip || "",
+                    line1: employee.address?.line1 || "",
+                    country: employee.address?.country || "",
+                    state: employee.address?.state || "",
+                    city: employee.address?.city || "",
+                    zip: employee.address?.zip || "",
                 },
                 currentPassword: "",
                 newPassword: "",
                 confirmPassword: "",
             });
         }
-    }, [user, reset]);
+    }, [employee, reset]);
 
     const onSubmit = async (data: ProfileFormValues) => {
         setIsLoading(true);
@@ -206,7 +206,7 @@ export default function ProfilePage() {
                 }
             }
 
-            await userApi.updateProfile(payload);
+            await employeeApi.updateProfile(payload);
             message.success("Profile updated successfully");
             await reloadConfig();
         } catch (err) {
@@ -242,11 +242,11 @@ export default function ProfilePage() {
                 <div className="flex flex-col xl:flex-row gap-x-6 gap-y-5 items-start">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 w-full max-w-[536px]">
                         <div className="flex flex-col">
-                            <LabelField tooltip="Team identifier">Team ID</LabelField>
+                            <LabelField tooltip="Employee identifier">Employee ID</LabelField>
                             <InputField
-                                id="teamId"
+                                id="empId"
                                 control={control as any}
-                                placeholder="Team ID"
+                                placeholder="Employee ID"
                                 disabled={true}
                             />
                         </div>
@@ -303,7 +303,7 @@ export default function ProfilePage() {
                                 title="Upload Photo"
                                 subtitle="PNG, JPG up to 5MB"
                                 accept=".png,.jpg,.jpeg"
-                                folder="team/avatars"
+                                folder="employee/avatars"
                                 disabled={!canUpdatePhoto}
                             />
                         </div>
@@ -414,7 +414,7 @@ export default function ProfilePage() {
                                 title="Upload Front Side"
                                 subtitle="PNG, JPG or PDF up to 5MB"
                                 accept=".png,.jpg,.jpeg,.pdf"
-                                folder="team/documents"
+                                folder="employee/documents"
                                 disabled={!canUpdateAadharFront}
                             />
                         </div>
@@ -432,7 +432,7 @@ export default function ProfilePage() {
                                 title="Upload Back Side"
                                 subtitle="PNG, JPG or PDF up to 5MB"
                                 accept=".png,.jpg,.jpeg,.pdf"
-                                folder="team/documents"
+                                folder="employee/documents"
                                 disabled={!canUpdateAadharBack}
                             />
                         </div>

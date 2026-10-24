@@ -5,7 +5,7 @@ import { Tooltip, Dropdown } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import AuditIcon from "@/assets/icons/AuditIcon";
 
-interface TeamHeaderActionsProps {
+interface EmployeeHeaderActionsProps {
     currentStatus: string;
     isStatusUpdating?: boolean;
     canViewAudit?: boolean;
@@ -18,13 +18,13 @@ const STATUS_ITEMS = [
     { key: "SUSPENDED", label: "Suspended", dotColor: "bg-[#f59e0b]" },
 ] as const;
 
-export default function TeamHeaderActions({
+export default function EmployeeHeaderActions({
     currentStatus,
     isStatusUpdating = false,
     canViewAudit = true,
     onStatusChange,
     onAuditClick,
-}: TeamHeaderActionsProps) {
+}: EmployeeHeaderActionsProps) {
     const isActive = currentStatus === "ACTIVE";
 
     const menuItems = STATUS_ITEMS.map((item) => ({

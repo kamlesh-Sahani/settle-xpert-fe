@@ -35,7 +35,7 @@ const DynamicForm = ({ apiUrl, method, options }: dynamicFormPropsType) => {
           span: 24,
           offset: 2,
           type: "heading",
-          label: "1. User Profile",
+          label: "1. Employee Profile",
           fontSize: 12,
           color: 'red',
           fontWeight: '500'
@@ -627,15 +627,15 @@ const DynamicForm = ({ apiUrl, method, options }: dynamicFormPropsType) => {
             labelsKey: "month",
             height: 300,
             data: [
-              { month: "Jan", users: 100, growth: 10 },
-              { month: "Feb", users: 150, growth: 50 },
-              { month: "Mar", users: 200, growth: 50 },
-              { month: "Apr", users: 300, growth: 100 }
+              { month: "Jan", employees: 100, growth: 10 },
+              { month: "Feb", employees: 150, growth: 50 },
+              { month: "Mar", employees: 200, growth: 50 },
+              { month: "Apr", employees: 300, growth: 100 }
             ],
             datasets: [
               {
-                label: "New Users",
-                dataKey: "users",
+                label: "New Employees",
+                dataKey: "employees",
                 backgroundColor: "#10b981"
               },
               {
@@ -745,7 +745,7 @@ const DynamicForm = ({ apiUrl, method, options }: dynamicFormPropsType) => {
             ],
             datasets: [
               {
-                label: "Users",
+                label: "Employees",
                 dataKey: "count",
                 backgroundColor: [
                   "rgba(59, 130, 246, 0.6)",

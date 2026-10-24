@@ -8,15 +8,15 @@ import ButtonField from "@/common/basic/ButtonField";
 import DynamicAuditModal from "@/common/dynamic/DynamicAuditModal";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function TeamPage() {
-    const filterKey = "admin-team";
+export default function EmployeePage() {
+    const filterKey = "admin-employee";
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [selectedAuditId, setSelectedAuditId] = useState<string | null>(null);
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const handleCreate = () => {
-        router.push(`/admin/team/create?${searchParams.toString()}`);
+        router.push(`/admin/employee/create?${searchParams.toString()}`);
     };
 
     const rightSection = (
@@ -26,7 +26,7 @@ export default function TeamPage() {
             className="bg-primary text-white hover:bg-primary-hover font-medium px-4 rounded-[8px]"
             onClick={handleCreate}
         >
-            Add Team Member
+            Add Employee
         </ButtonField>
     );
 
@@ -41,7 +41,7 @@ export default function TeamPage() {
         if (data?.actionType === "CREATE_MEMBER" || data?.actionType === "EDIT") {
             const id = data?.actionData?.id;
             if (id) {
-                router.push(`/admin/team/${id}?${searchParams.toString()}`);
+                router.push(`/admin/employee/${id}?${searchParams.toString()}`);
             } else {
                 handleCreate();
             }
@@ -51,9 +51,9 @@ export default function TeamPage() {
     return (
         <div className="flex flex-col h-full bg-background w-full">
             <DynamicHeader
-                title="Team"
+                title="Employees"
                 filterKey={filterKey}
-                searchPlaceholder="Search team members here"
+                searchPlaceholder="Search employees here"
                 rightSection={rightSection}
                 onRefresh={() => setRefreshTrigger(prev => prev + 1)}
             />
@@ -66,7 +66,7 @@ export default function TeamPage() {
                     onActionClick={onActionClick}
                     paginationType="cursor"
                     apiData={{
-                        apiUrl: "/api/v1/team/list",
+                        apiUrl: "/api/v1/emp/list",
                         apiType: "post"
                     }}
                 />
@@ -76,9 +76,9 @@ export default function TeamPage() {
                 isOpen={Boolean(selectedAuditId)}
                 onClose={() => setSelectedAuditId(null)}
                 entityId={selectedAuditId || ""}
-                entityType="team"
+                entityType="employee"
                 title="Audit History"
-                apiUrl="/api/v1/team/audit-history"
+                apiUrl="/api/v1/emp/audit-history"
             />
         </div>
     );

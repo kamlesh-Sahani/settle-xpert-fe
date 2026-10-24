@@ -53,7 +53,7 @@ export default function DynamicAuditModal({
     const isPermitted = usePermission(permission || "");
     const [internalAuditChanges, setInternalAuditChanges] = useState<AuditChangesDetail | null>(null);
 
-    // Permission enforcement: if permission is specified and user lacks it, do not render
+    // Permission enforcement: if permission is specified and employee lacks it, do not render
     if (permission && !isPermitted) {
         return null;
     }

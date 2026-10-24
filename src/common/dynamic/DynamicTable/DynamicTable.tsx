@@ -54,7 +54,7 @@ export default function DynamicTable({
   const prevSearchRef = useRef<string | undefined>(filters?.tableSearch);
 
   const effectivePayload = useMemo(() => {
-    // When the user inputs a new search query, start from page 1
+    // When the employee inputs a new search query, start from page 1
     if (prevSearchRef.current !== filters?.tableSearch) {
       return { ...payload, page: 1, cursor: "" };
     }

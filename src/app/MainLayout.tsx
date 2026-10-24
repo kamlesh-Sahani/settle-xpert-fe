@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import DynamicSideBar from "@/common/dynamic/DynamicSideBar";
 import { usePathname, useRouter } from "next/navigation";
 import { useSideMenu } from "@/store/menus/sideMenu.store";
-import { useUserStore } from "@/store/user.store";
-import api, { userApi } from "@/common/utils/api";
+import { useEmployeeStore } from "@/store/employee.store";
+import api, { employeeApi } from "@/common/utils/api";
 import { useFetch } from "@/hooks/useFetch";
 import ModuleSwitcherModal from "@/components/modals/ModuleSwitcherModal";
 import LoadingSpinner from "@/common/basic/LoadingSpinner";
@@ -21,8 +21,8 @@ const withOutNavbarAndFooter = new Set([
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const { menus, currentMenu, toggleMenu } = useSideMenu();
-  const { isInitialized, setUserData, clearUserData } = useUserStore();
-  const permissions = useUserStore((state) => state.permissions);
+  const { isInitialized, setEmployeeData, clearEmployeeData } = useEmployeeStore();
+  const permissions = useEmployeeStore((state) => state.permissions);
   const router = useRouter();
   const pathname = usePathname();
   const [isModuleSwitcherOpen, setIsModuleSwitcherOpen] = useState(false);
@@ -30,7 +30,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const handleSelectModule = (moduleKey: string) => {
     toggleMenu(moduleKey);
     if (moduleKey === "MAIN") router.push("/dashboard");
-    else if (moduleKey === "SECONDARY") router.push("/admin/team");
+    else if (moduleKey === "SECONDARY") router.push("/admin/employee");
   };
 
   useEffect(() => {
@@ -42,36 +42,36 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   }, [pathname, currentMenu, toggleMenu]);
 
   const isProtectedRoute = !withOutNavbarAndFooter.has(pathname);
-  const user = useUserStore((state) => state.user);
+  const employee = useEmployeeStore((state) => state.employee);
 
   const { error, refetch } = useFetch({
     client: api.get,
-    url: "/api/v1/team/config",
+    url: "/api/v1/emp/config",
     dontCall: !isProtectedRoute || isInitialized,
     onSuccess: (res: any) => {
       if (res?.success) {
-        setUserData(res.data);
+        setEmployeeData(res.data);
       } else {
-        clearUserData();
+        clearEmployeeData();
       }
     },
   });
 
   useEffect(() => {
     // Only redirect if session was successfully checked and determined to be unauthenticated (not on server errors)
-    if (isProtectedRoute && isInitialized && !user && !error) {
+    if (isProtectedRoute && isInitialized && !employee && !error) {
       const callbackUrl = encodeURIComponent(pathname);
       router.replace(`/login?callbackUrl=${callbackUrl}`);
     }
-  }, [isProtectedRoute, isInitialized, user, error, pathname, router]);
+  }, [isProtectedRoute, isInitialized, employee, error, pathname, router]);
 
   const handleLogout = async () => {
     try {
-      await userApi.logout();
+      await employeeApi.logout();
     } catch {
       // ignore
     }
-    clearUserData();
+    clearEmployeeData();
     router.replace("/login");
   };
 
@@ -100,7 +100,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (isProtectedRoute && (!isInitialized || !user)) {
+  if (isProtectedRoute && (!isInitialized || !employee)) {
     return <LoadingSpinner fullScreen />;
   }
 

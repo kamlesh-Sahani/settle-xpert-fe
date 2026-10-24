@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-export const getMemberSchema = (isEditing: boolean) =>
+export const getEmployeeSchema = (isEditing: boolean) =>
     z.object({
-        teamId: z.string().optional(),
+        empId: z.string().optional(),
         name: z.string().min(1, "Name is required"),
         email: z.string().email("Please enter a valid email address"),
         password: z
@@ -10,11 +10,9 @@ export const getMemberSchema = (isEditing: boolean) =>
             .optional()
             .refine(
                 (val) => {
-                    // In edit mode: password is fully optional (can be blank/empty)
                     if (isEditing) {
                         return !val || val.length >= 6;
                     }
-                    // In create mode: password is required
                     return !!val && val.length >= 6;
                 },
                 {
@@ -52,5 +50,5 @@ export const getMemberSchema = (isEditing: boolean) =>
             .optional(),
     });
 
-export const memberSchema = getMemberSchema(false);
-export type MemberSchema = z.infer<typeof memberSchema>;
+export const employeeSchema = getEmployeeSchema(false);
+export type EmployeeSchema = z.infer<typeof employeeSchema>;

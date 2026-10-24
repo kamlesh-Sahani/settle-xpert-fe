@@ -11,12 +11,12 @@ import PasswordField from "@/common/form/PasswordField";
 import ButtonField from "@/common/basic/ButtonField";
 import BrandLogo from "@/common/basic/BrandLogo";
 import FormStatusMessage, { SubmitStatusType } from "@/common/form/FormStatusMessage";
-import { userApi } from "@/common/utils/api";
+import { employeeApi } from "@/common/utils/api";
 import { responseError } from "@/common/utils/main.utils";
 import { APP_CONFIG } from "@/config/app.config";
 
 const loginSchema = z.object({
-  email: z.string().min(1, "Username or email is required"),
+  email: z.string().min(1, "Email is required"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -39,7 +39,7 @@ export default function LoginPage() {
     setIsLoading(true);
     setSubmitStatus(null);
     try {
-      const res = await userApi.login({
+      const res = await employeeApi.login({
         email: data.email,
         password: data.password,
       });
@@ -48,7 +48,7 @@ export default function LoginPage() {
       if (!json?.success) {
         setSubmitStatus({
           type: "error",
-          text: json?.message || "Incorrect username or password.",
+          text: json?.message || "Incorrect email or password.",
         });
         return;
       }
@@ -95,14 +95,14 @@ export default function LoginPage() {
             <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col gap-5">
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="email" className="text-sm font-medium text-text-primary">
-                  Username or email address
+                  Email address
                 </label>
                 <InputField
                   id="email"
                   name="email"
                   type="text"
-                  placeholder=""
-                  autoComplete="username"
+                  placeholder="Enter your email"
+                  autoComplete="email"
                   control={methods.control as any}
                   className="rounded-md"
                 />
@@ -117,7 +117,7 @@ export default function LoginPage() {
                 <PasswordField
                   id="password"
                   name="password"
-                  placeholder=""
+                  placeholder="Enter your password"
                   autoComplete="current-password"
                   control={methods.control as any}
                   className="rounded-md"

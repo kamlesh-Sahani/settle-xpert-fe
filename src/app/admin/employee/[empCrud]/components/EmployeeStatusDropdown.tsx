@@ -4,7 +4,7 @@ import React from "react";
 import { Dropdown } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 
-interface TeamStatusDropdownProps {
+interface EmployeeStatusDropdownProps {
     currentStatus: string;
     isStatusUpdating?: boolean;
     onStatusChange: (status: "ACTIVE" | "SUSPENDED") => void;
@@ -15,11 +15,11 @@ const STATUS_ITEMS = [
     { key: "SUSPENDED", label: "Suspended", dotColor: "bg-[#f59e0b]" },
 ] as const;
 
-export default function TeamStatusDropdown({
+export default function EmployeeStatusDropdown({
     currentStatus,
     isStatusUpdating = false,
     onStatusChange,
-}: TeamStatusDropdownProps) {
+}: EmployeeStatusDropdownProps) {
     const isActive = currentStatus === "ACTIVE";
 
     const menuItems = STATUS_ITEMS.map((item) => ({

@@ -29,7 +29,7 @@ const ModuleSwitcherModal: React.FC<ModuleSwitcherModalProps> = ({
         {
             key: "SECONDARY",
             title: "Admin Settings",
-            description: "Configure team members, access permissions, and roles.",
+            description: "Configure employees, access permissions, and roles.",
             icon: <SettingOutlined className="text-2xl" />,
         },
     ];
