@@ -49,11 +49,7 @@ export function buildColumns(
                   field={col}
                   current={parsedCurrent}
                   onChange={(val) => {
-                    if (isNotEmpty(val?.value)) {
-                      setSelectedKeys([JSON.stringify(val)]);
-                    } else {
-                      setSelectedKeys([]);
-                    }
+                    setSelectedKeys(val ? [JSON.stringify(val)] : []);
                   }}
                   onApply={() => confirm({ closeDropdown: true })}
                   onReset={() => {

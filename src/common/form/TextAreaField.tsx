@@ -11,6 +11,8 @@ export interface TextAreaFieldProps extends Partial<FieldConfig> {
   className?: string;
   control: Control<FieldValues, any, FieldValues>;
   rows?: number;
+  style?: React.CSSProperties;
+  [key: string]: any;
 }
 
 export default function TextAreaField(props: TextAreaFieldProps) {

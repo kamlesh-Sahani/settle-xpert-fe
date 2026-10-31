@@ -19,6 +19,8 @@ export interface DynamicConfirmationModalProps {
   zIndex?: number;
   close?: "icon" | "text";
   className?: string;
+  confirmButtonClassName?: string;
+  cancelButtonClassName?: string;
 }
 
 export default function DynamicConfirmationModal({
@@ -35,6 +37,8 @@ export default function DynamicConfirmationModal({
   zIndex = 60,
   close = "icon",
   className,
+  confirmButtonClassName,
+  cancelButtonClassName,
 }: DynamicConfirmationModalProps) {
   return (
     <DynamicModal
@@ -59,12 +63,15 @@ export default function DynamicConfirmationModal({
           </div>
         )}
 
-        <div className="flex items-center justify-end mt-8">
+        <div className="flex items-center justify-end gap-3 mt-8 pb-1">
           <ButtonField
             type="default"
             onClick={onClose}
             disabled={isLoading}
-            className="font-semibold text-text-primary bg-secondary hover:bg-secondary/80 border-none w-24 py-1.5 !rounded-l-md !rounded-r-none"
+            className={classNames(
+              "font-medium text-xs text-text-primary bg-secondary hover:bg-secondary/80 border border-border/80 px-4 h-9 rounded-lg transition-colors",
+              cancelButtonClassName
+            )}
           >
             {cancelText}
           </ButtonField>
@@ -72,7 +79,10 @@ export default function DynamicConfirmationModal({
             type="primary"
             onClick={onConfirm}
             loading={isLoading}
-            className="bg-primary hover:bg-primary-hover text-white font-semibold border-none w-24 py-1.5 rounded-l-none rounded-r-md"
+            className={classNames(
+              "bg-primary hover:bg-primary-hover text-white font-medium text-xs border-none px-5 h-9 rounded-lg transition-colors whitespace-nowrap min-w-[90px]",
+              confirmButtonClassName
+            )}
           >
             {confirmText}
           </ButtonField>

@@ -25,7 +25,7 @@ export const mainMenu = [
     key: "leads",
     icon: <ContactsOutlined className="text-[17px]" />,
     label: "Leads",
-    route: "/leads" as any,
+    route: "/employee/leads" as any,
     permission: "lead:read",
   },
   {

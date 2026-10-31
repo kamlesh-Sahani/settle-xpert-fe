@@ -13,9 +13,10 @@ interface FilterDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   filterKey: string;
+  width?: number | string;
 }
 
-export default function FilterDrawer({ isOpen, onClose, filterKey }: FilterDrawerProps) {
+export default function FilterDrawer({ isOpen, onClose, filterKey, width = 400 }: FilterDrawerProps) {
   const [filters, setFilters] = useGridFilters<any>(filterKey);
 
   // Available filters from backend columns
@@ -221,7 +222,7 @@ export default function FilterDrawer({ isOpen, onClose, filterKey }: FilterDrawe
       open={isOpen}
       onClose={onClose}
       styles={{
-        wrapper: { width: 400 }
+        wrapper: { width }
       }}
       title={drawerTitle}
       footer={drawerFooter}

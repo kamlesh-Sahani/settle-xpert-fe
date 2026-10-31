@@ -9,30 +9,35 @@ interface BrandLogoProps {
   collapsed?: boolean;
 }
 
-export const BrandIcon = ({
-  className = "h-8 w-auto",
+export const BrandIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({
+  className = "h-7 w-auto",
   style,
-}: {
-  className?: string;
-  style?: React.CSSProperties;
+  ...props
 }) => (
   <svg
-    viewBox="0 0 36 40"
+    viewBox="0 0 32 32"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={classNames("inline-block shrink-0", className)}
+    className={classNames("shrink-0", className)}
     style={style}
     aria-hidden="true"
+    {...props}
   >
-    {/* Head of the triumphant figure */}
-    <circle cx="18" cy="6" r="4.5" className="fill-text-primary" />
-    {/* Celebrating human figure forming the X */}
+    {/* Top flowing ribbon of S */}
     <path
-      d="M 3 19.5 C 8 20.5 12 18.5 15.5 15.5 C 19 12 22 7 24.5 2 C 24.5 2 23.5 10 20 16 C 24 19 29.5 22 35 23.5 C 30 24 24.5 22.5 19.5 19 C 17.5 22.5 14 30.5 9.5 38.5 C 11.5 32 14.5 25 15.5 19 C 11.5 19.5 7 19 3 19.5 Z"
-      fill="#15803d"
+      d="M 26.5 4.5 C 19.5 3.5 10 3.8 6.5 7.8 C 4 10.8 4 14.8 5.5 17.8 C 7 20.2 9.5 21.6 11 21.6 L 14.6 16.8 C 14.6 13.6 18 8.2 26.5 4.5 Z"
+      fill="currentColor"
+    />
+    {/* Bottom flowing ribbon of S (180 deg rotation) */}
+    <path
+      d="M 26.5 4.5 C 19.5 3.5 10 3.8 6.5 7.8 C 4 10.8 4 14.8 5.5 17.8 C 7 20.2 9.5 21.6 11 21.6 L 14.6 16.8 C 14.6 13.6 18 8.2 26.5 4.5 Z"
+      transform="rotate(180 16 16)"
+      fill="currentColor"
     />
   </svg>
 );
+
+export const Logo = BrandIcon;
 
 export default function BrandLogo({
   className,
@@ -40,16 +45,23 @@ export default function BrandLogo({
   collapsed = false,
 }: BrandLogoProps) {
   const sizeClasses = {
-    sm: "text-lg",
-    md: "text-xl",
-    lg: "text-3xl",
-    xl: "text-4xl",
+    sm: "text-base",
+    md: "text-lg",
+    lg: "text-2xl",
+    xl: "text-3xl",
+  };
+
+  const iconSizes = {
+    sm: "h-5 w-auto",
+    md: "h-6 w-auto",
+    lg: "h-8 w-auto",
+    xl: "h-9 w-auto",
   };
 
   if (collapsed) {
     return (
       <div className={classNames("flex items-center justify-center", className)}>
-        <BrandIcon className="h-7 w-7" />
+        <BrandIcon className="h-7 w-auto text-primary" />
       </div>
     );
   }
@@ -57,17 +69,13 @@ export default function BrandLogo({
   return (
     <div
       className={classNames(
-        "inline-flex items-center select-none font-bold tracking-tight leading-none font-sans",
+        "inline-flex items-center gap-2 select-none font-bold tracking-tight leading-none font-sans",
         sizeClasses[size],
         className
       )}
     >
-      <span className="text-[#15803d]">Settle</span>
-      <BrandIcon
-        className="h-[1.18em] w-auto mx-[-0.04em] shrink-0"
-        style={{ verticalAlign: "-0.16em" } as React.CSSProperties}
-      />
-      <span className="text-text-primary">pert</span>
+      <BrandIcon className={classNames("text-primary", iconSizes[size])} />
+      <span className="text-text-primary">SettleXpert</span>
     </div>
   );
 }

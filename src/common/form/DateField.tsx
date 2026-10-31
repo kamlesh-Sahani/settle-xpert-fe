@@ -11,6 +11,9 @@ export interface DateFieldProps extends Partial<FieldConfig> {
   onChange?: (val: any) => void;
   className?: string;
   control: Control<FieldValues, any, FieldValues>;
+  showTime?: any;
+  format?: any;
+  [key: string]: any;
 }
 
 export default function DateField(props: DateFieldProps) {

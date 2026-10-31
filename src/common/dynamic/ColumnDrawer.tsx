@@ -26,6 +26,7 @@ interface ColumnDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   filterKey: string;
+  width?: number | string;
 }
 
 function SortableColumnItem({ id, col, isHidden, onToggle }: any) {
@@ -74,7 +75,7 @@ function SortableColumnItem({ id, col, isHidden, onToggle }: any) {
   );
 }
 
-export default function ColumnDrawer({ isOpen, onClose, filterKey }: ColumnDrawerProps) {
+export default function ColumnDrawer({ isOpen, onClose, filterKey, width = 400 }: ColumnDrawerProps) {
   const [filters, setFilters] = useGridFilters<any>(filterKey);
 
   // Available columns from backend
@@ -165,7 +166,7 @@ export default function ColumnDrawer({ isOpen, onClose, filterKey }: ColumnDrawe
       open={isOpen}
       onClose={onClose}
       styles={{
-        wrapper: { width: 320 }
+        wrapper: { width }
       }}
       title={drawerTitle}
       footer={drawerFooter}

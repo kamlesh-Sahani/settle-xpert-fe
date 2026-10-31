@@ -17,6 +17,7 @@ const withOutNavbarAndFooter = new Set([
   "/register",
   "/verify",
   "/form-builder",
+  "/template-editor",
 ]);
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
