@@ -5,21 +5,31 @@ import { useRouter } from "next/navigation";
 import DynamicHeader from "@/common/dynamic/DynamicHeader";
 import DynamicTable from "@/common/dynamic/DynamicTable/DynamicTable";
 import ButtonField from "@/common/basic/ButtonField";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import BulkLeadImportModal from "./components/BulkLeadImportModal";
 
 const filterKey = "leads-list";
 
 export default function LeadsPage() {
   const router = useRouter();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const rightSection = (
     <div className="flex items-center gap-2.5">
       <ButtonField
+        type="default"
+        icon={<UploadOutlined />}
+        onClick={() => setIsImportModalOpen(true)}
+        className="font-medium px-3.5 text-xs h-9 text-slate-700 bg-white border-slate-200 hover:bg-slate-50"
+      >
+        Import Leads
+      </ButtonField>
+      <ButtonField
         type="primary"
         icon={<PlusOutlined />}
         onClick={() => router.push("/employee/leads/create")}
-        className="bg-primary text-white hover:bg-primary-hover font-medium px-4"
+        className="bg-primary text-white hover:bg-primary-hover font-medium px-4 text-xs h-9"
       >
         Add Lead
       </ButtonField>
@@ -48,6 +58,13 @@ export default function LeadsPage() {
           }}
         />
       </div>
+
+      {/* Bulk Lead Import Modal */}
+      <BulkLeadImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+      />
     </div>
   );
 }

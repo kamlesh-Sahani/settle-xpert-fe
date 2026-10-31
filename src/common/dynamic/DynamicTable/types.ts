@@ -91,6 +91,13 @@ export interface ModalCellType {
 
 }
 
+export interface CustomCellType {
+  type: "CUSTOM";
+  render?: React.ReactNode | ((record?: any) => React.ReactNode);
+  component?: React.ReactNode;
+  subTitle?: string;
+}
+
 export type TableCellType =
   | ImageCellType
   | LinkCellType
@@ -98,7 +105,8 @@ export type TableCellType =
   | StatusCellType
   | DynamicFormCellType
   | ActionCellType
-  | ModalCellType;
+  | ModalCellType
+  | CustomCellType;
 
 // ─── Column Definition ──────────────────────────────────────────────────────
 
@@ -188,6 +196,7 @@ export interface StaticTableProps<RecordType = any>
   error?: string | null;
   onRetry?: () => void;
   border?: boolean;
+  pagination?: boolean;
 }
 
 // ─── Internal Params State ──────────────────────────────────────────────────

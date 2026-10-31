@@ -326,13 +326,13 @@ export default function LeadDetailView({ leadId }: { leadId?: string }) {
             <div className="space-y-0.5">
               <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">Total Debt</span>
               <p className="text-xl font-semibold tracking-tight text-slate-800 m-0">
-                ₹{fetchResponse.data.totalDebtAmount.toLocaleString("en-IN")}
+                ₹{(fetchResponse.data.totalDebtAmount ?? 0).toLocaleString("en-IN")}
               </p>
             </div>
             <div className="space-y-0.5 sm:border-l sm:border-slate-200 sm:pl-4">
               <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">Outstanding Balance</span>
               <p className="text-xl font-semibold tracking-tight text-rose-600 m-0">
-                ₹{fetchResponse.data.outstandingAmount.toLocaleString("en-IN")}
+                ₹{(fetchResponse.data.outstandingAmount ?? 0).toLocaleString("en-IN")}
               </p>
             </div>
             <div className="space-y-0.5 sm:border-l sm:border-slate-200 sm:pl-4">
@@ -375,10 +375,10 @@ export default function LeadDetailView({ leadId }: { leadId?: string }) {
                       <td className="py-3 px-3.5 font-medium text-slate-800">{debt.lender}</td>
                       <td className="py-3 px-3.5 text-slate-600">{debt.loanType}</td>
                       <td className="py-3 px-3.5 text-right font-normal text-slate-800">
-                        ₹{debt.outstandingAmount.toLocaleString("en-IN")}
+                        ₹{(debt.outstandingAmount ?? 0).toLocaleString("en-IN")}
                       </td>
                       <td className="py-3 px-3.5 text-right font-normal text-slate-800">
-                        ₹{debt.monthlyEmi.toLocaleString("en-IN")}
+                        ₹{(debt.monthlyEmi ?? 0).toLocaleString("en-IN")}
                       </td>
                       <td className="py-3 px-3.5 text-center">
                         <Tag color={debt.status === "Active" ? "blue" : "warning"} className="m-0 rounded">
@@ -392,7 +392,7 @@ export default function LeadDetailView({ leadId }: { leadId?: string }) {
                   <tr className="bg-slate-50/50 border-t border-slate-200/80 font-semibold text-slate-800 text-xs">
                     <td className="py-3 px-3.5" colSpan={2}>Total Combined Liabilities</td>
                     <td className="py-3 px-3.5 text-right text-rose-600 font-semibold">
-                      ₹{fetchResponse.data.totalDebtAmount.toLocaleString("en-IN")}
+                      ₹{(fetchResponse.data.totalDebtAmount ?? 0).toLocaleString("en-IN")}
                     </td>
                     <td className="py-3 px-3.5 text-right font-semibold">
                       ₹{(fetchResponse.data.financialAssessment?.totalMonthlyEmi ?? 0).toLocaleString("en-IN")}

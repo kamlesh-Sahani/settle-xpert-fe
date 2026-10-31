@@ -4,7 +4,12 @@ import { PlusOutlined, LinkOutlined } from "@ant-design/icons";
 import { FieldConfig } from "@/types/formField.types";
 import classNames from "classnames";
 import { Control, Controller, FieldValues } from "react-hook-form";
-import { isNotEmptyObject, isNotEmptyString } from "@/common/utils/main.utils";
+import {
+  isFunction,
+  isNotEmptyArray,
+  isNotEmptyObject,
+  isNotEmptyString,
+} from "@/common/utils/main.utils";
 
 export interface SelectCreateAction {
   label: React.ReactNode | string;
@@ -27,11 +32,10 @@ export type SelectPropsType = Omit<SelectProps<any>, "onChange" | "options" | "p
     suffix?: React.ReactNode;
     prefix?: React.ReactNode;
     create?: SelectCreateAction;
+    hideKeys?: (string | number)[];
   };
 
-// Static default field names to avoid allocating new objects per render
-const DEFAULT_KEY_VALUE_FIELDS = { label: "value", value: "key" } as const;
-const DEFAULT_LABEL_VALUE_FIELDS = { label: "label", value: "value" } as const;
+const DEFAULT_FIELD_NAMES = { label: "value", value: "key" } as const;
 
 function SelectFieldComponent(props: SelectPropsType) {
   const {
@@ -55,23 +59,12 @@ function SelectFieldComponent(props: SelectPropsType) {
     dropdownRender: customDropdownRender,
     optionRender: customOptionRender,
     fieldNames: customFieldNames,
+    hideKeys,
     ...rest
   } = props;
 
-  // 1. Auto-detect & memoize fieldNames: adapt to both {key, value} and {label, value}
-  const resolvedFieldNames = useMemo(() => {
-    if (customFieldNames) return customFieldNames;
-    if (options && options.length > 0) {
-      const first = options[0];
-      if (first && "key" in first && !("label" in first)) {
-        return DEFAULT_KEY_VALUE_FIELDS;
-      }
-      if (first && "label" in first && !("key" in first)) {
-        return DEFAULT_LABEL_VALUE_FIELDS;
-      }
-    }
-    return DEFAULT_KEY_VALUE_FIELDS;
-  }, [customFieldNames, options]);
+  const resolvedFieldNames = customFieldNames || DEFAULT_FIELD_NAMES;
+  const hideSet = useMemo(() => (isNotEmptyArray(hideKeys) ? new Set(hideKeys) : null), [hideKeys]);
 
   // 2. Option renderer with robust link detection and polished UI badge button
   const resolvedOptionRender = useCallback(
@@ -80,14 +73,7 @@ function SelectFieldComponent(props: SelectPropsType) {
         ? customOptionRender(option, info)
         : (option.data?.value ?? option.data?.label ?? option.label ?? option.value);
 
-      const data = option?.data || option;
-      const link =
-        data?.link ||
-        data?.original?.link ||
-        data?.url ||
-        data?.original?.url ||
-        option?.link;
-
+      const link = option?.data?.link;
       if (isNotEmptyString(link)) {
         return (
           <div className="flex items-center justify-between w-full min-w-0 py-0.5 gap-2">
@@ -166,7 +152,7 @@ function SelectFieldComponent(props: SelectPropsType) {
       dropdownClassName
     );
 
-    if (typeof customClassNames === "function") {
+    if (isFunction(customClassNames)) {
       return (info: any) => {
         const res = (customClassNames as any)(info);
         return {
@@ -192,6 +178,16 @@ function SelectFieldComponent(props: SelectPropsType) {
       name={name || id}
       control={control}
       render={({ field, fieldState }) => {
+        const valKey = resolvedFieldNames.value || "key";
+        const currentVal = field.value ?? _value;
+        const displayOptions =
+          hideSet && isNotEmptyArray(options)
+            ? options.filter((opt: any) => {
+              const val = opt?.[valKey];
+              return val === currentVal || !hideSet.has(val);
+            })
+            : options;
+
         const handleChange = (value: string, option: any) => {
           field.onChange(value);
           onChange?.({ value, option });
@@ -205,20 +201,18 @@ function SelectFieldComponent(props: SelectPropsType) {
             style={formItemStyle}
           >
             <Select
-              id={id}
-              aria-invalid={Boolean(fieldState.error)}
               className={classNames("w-full", className)}
               classNames={mergedClassNames}
               placeholder={placeholder}
               disabled={disabled}
-              options={options}
+              options={displayOptions}
               size="middle"
               showSearch={showSearch}
               fieldNames={resolvedFieldNames}
               popupRender={resolvedPopupRender}
               optionRender={resolvedOptionRender}
               {...field}
-              value={field.value === "" || field.value === null || field.value === undefined ? undefined : field.value}
+              value={field.value === "" || field.value == null ? undefined : field.value}
               onChange={handleChange}
               {...rest}
             />

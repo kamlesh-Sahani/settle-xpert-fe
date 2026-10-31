@@ -5,6 +5,7 @@ import { Empty } from "antd";
 import { useApiOptions, OptionType } from "@/hooks/useApiOptions";
 import SelectField, { SelectPropsType } from "@/common/form/SelectField";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { isNotEmptyArray, isNotEmptyString } from "@/common/utils/main.utils";
 
 export interface SelectApiFieldProps extends Omit<SelectPropsType, "options"> {
   apiUrl?: string; // The endpoint to fetch data from
@@ -153,7 +154,7 @@ export default function SelectApiField({
 
   // Dynamic notFoundContent based on state
   let notFoundContent: React.ReactNode = null;
-  if (loading && options.length === 0) {
+  if (loading && !isNotEmptyArray(options)) {
     notFoundContent = (
       <div className="py-8 flex flex-col items-center justify-center gap-2.5 text-slate-400 select-none">
         <svg
@@ -171,7 +172,7 @@ export default function SelectApiField({
         <span className="text-xs font-medium text-slate-500">Loading options...</span>
       </div>
     );
-  } else if (error && options.length === 0) {
+  } else if (error && !isNotEmptyArray(options)) {
     notFoundContent = (
       <div className="py-6 flex flex-col items-center justify-center text-red-500 px-4 text-center gap-1.5 select-none">
         <ExclamationCircleOutlined className="text-xl text-red-400" />
@@ -193,7 +194,7 @@ export default function SelectApiField({
     notFoundContent = (
       <Empty
         image={Empty.PRESENTED_IMAGE_SIMPLE}
-        description={search ? "No matches found" : "No data available"}
+        description={isNotEmptyString(search) ? "No matches found" : "No data available"}
         className="my-4"
       />
     );

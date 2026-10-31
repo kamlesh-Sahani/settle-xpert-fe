@@ -10,6 +10,7 @@ import StatusCell from "./StatusCell";
 import ActionCell from "./ActionCell";
 import DynamicFormCell from "./DynamicFormCell";
 import ModalCell from "./ModalCell";
+import CustomCell from "./CustomCell";
 
 interface CompositeCellProps {
   cells: TableCellType[];
@@ -24,7 +25,8 @@ export const cellRendererRegistry: Record<string, FC<any>> = {
   STATUS: StatusCell,
   ACTION: ActionCell,
   DYNAMIC_FORM: DynamicFormCell,
-  MODAL: ModalCell
+  MODAL: ModalCell,
+  CUSTOM: CustomCell,
 };
 function CompositeCell({ cells, record, onActionClick }: CompositeCellProps) {
   if (!isNotEmptyArray(cells)) return null;

@@ -23,6 +23,7 @@ export default function StaticTable({
   error,
   onRetry,
   bordered = true,
+  pagination = true,
   ...tableProps
 }: StaticTableProps) {
   // ─── Pagination, sort, search state ───────────────────────────────────────
@@ -242,7 +243,7 @@ export default function StaticTable({
     if (node) {
       observerRef.current = new ResizeObserver((entries) => {
         const height = entries[0]?.contentRect?.height ?? 400;
-        const available = Math.max(height - 100, 200);
+        const available = Math.max(height - 115, 150);
         setScrollY(available);
       });
       observerRef.current.observe(node);
@@ -292,6 +293,14 @@ export default function StaticTable({
     setScrollbarHeight(height);
   }, []);
 
+  const xScroll = useMemo(() => {
+    if (typeof tableProps.scroll?.x === "number") {
+      return tableProps.scroll.x;
+    }
+    const calculatedWidth = columns.reduce((acc, col) => acc + (Number(col.width) || 150), 0);
+    return Math.max(calculatedWidth, 800);
+  }, [columns, tableProps.scroll?.x]);
+
   // ─── Initial loading state (no data yet) ──────────────────────────────────
   if (loading && rows.length === 0) {
     return (
@@ -328,23 +337,29 @@ export default function StaticTable({
           rowKey="_rowKey"
           loading={loading}
           onChange={handleTableChange}
-          scroll={{ x: "max-content", y: scrollY }}
+          scroll={{
+            y: scrollY,
+            ...tableProps.scroll,
+            x: typeof tableProps.scroll?.x === "number" ? tableProps.scroll.x : xScroll,
+          }}
           size="small"
           pagination={
-            total > 0
+            pagination === false
+              ? false
+              : total > 0
               ? {
                 current: params.page,
                 pageSize: params.limit,
                 total,
                 showSizeChanger: true,
                 pageSizeOptions: PAGE_SIZE_OPTIONS as unknown as string[],
-                className: "px-6 py-3 border-t border-border m-0",
+                className: "px-6 py-2 border-t border-border !m-0",
                 showTotal: (totalCount, range) => (
                   <div className="flex items-center gap-2">
                     {showScrollbarControl && (
                       <ScrollbarHeightControl onApply={handleScrollbarHeightChange} currentHeight={scrollbarHeight} />
                     )}
-                    <span className="text-text-secondary font-medium text-sm">
+                    <span className="text-text-secondary font-medium text-xs">
                       Showing {range[0]} to {range[1]} of {totalCount} entries
                     </span>
                   </div>
@@ -352,16 +367,20 @@ export default function StaticTable({
               }
               : false
           }
-          footer={!staticData?.isPaginated && total > 0 ? () => (
-            <div className="flex items-center gap-2 bg-background m-0">
-              {showScrollbarControl && (
-                <ScrollbarHeightControl onApply={handleScrollbarHeightChange} currentHeight={scrollbarHeight} />
-              )}
-              <span className="text-text-secondary font-medium text-sm">
-                Showing {total} entries
-              </span>
-            </div>
-          ) : undefined}
+          footer={
+            pagination === false && total > 0
+              ? () => (
+                <div className="flex items-center gap-2 bg-background !m-0 px-6 py-2">
+                  {showScrollbarControl && (
+                    <ScrollbarHeightControl onApply={handleScrollbarHeightChange} currentHeight={scrollbarHeight} />
+                  )}
+                  <span className="text-text-secondary font-medium text-xs">
+                    Showing {total} entries
+                  </span>
+                </div>
+              )
+              : undefined
+          }
           locale={{ emptyText: <EmptyState msg="No Data Found" /> }}
         />
       </ConfigProvider>
