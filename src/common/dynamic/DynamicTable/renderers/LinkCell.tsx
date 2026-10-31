@@ -40,8 +40,8 @@ function LinkCell({
     color: color || "var(--primary-color)"
   };
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleClick = (e?: React.SyntheticEvent) => {
+    e?.stopPropagation();
 
     if (modalData) {
       if (onActionClick) {
@@ -79,7 +79,7 @@ function LinkCell({
       : url;
 
     if (target === "_blank") {
-      window.open(finalUrl, "_blank");
+      window.open(finalUrl, "_blank", "noopener,noreferrer");
     } else {
       router.push(finalUrl);
     }
@@ -87,7 +87,15 @@ function LinkCell({
 
   const link = (
     <div
+      role="link"
+      tabIndex={0}
       onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
       style={style}
       onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.7"; }}
       onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}

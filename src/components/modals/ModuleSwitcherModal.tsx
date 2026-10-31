@@ -49,8 +49,10 @@ const ModuleSwitcherModal: React.FC<ModuleSwitcherModalProps> = ({
             bodyClassName="p-8 relative"
         >
             <button
+                type="button"
+                aria-label="Close module switcher"
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 text-text-secondary hover:text-text-primary hover:bg-secondary rounded-full transition-colors z-10 cursor-pointer"
+                className="absolute top-4 right-4 p-2 text-text-secondary hover:text-text-primary hover:bg-secondary rounded-full transition-colors z-10 cursor-pointer focus-visible:outline-2 focus-visible:outline-primary"
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 6L6 18"></path>
@@ -68,9 +70,18 @@ const ModuleSwitcherModal: React.FC<ModuleSwitcherModalProps> = ({
                         return (
                             <div
                                 key={mod.key}
+                                role="button"
+                                tabIndex={0}
+                                aria-pressed={isActive}
                                 onClick={() => handleSelect(mod.key)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                        e.preventDefault();
+                                        handleSelect(mod.key);
+                                    }
+                                }}
                                 className={classNames(
-                                    "flex gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 group hover:shadow-md w-[300px] min-w-[300px]",
+                                    "flex gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 group hover:shadow-md w-[300px] min-w-[300px] focus-visible:outline-2 focus-visible:outline-primary",
                                     isActive
                                         ? "border-primary bg-primary/10 shadow-sm"
                                         : "border-border bg-background hover:border-primary/40 hover:bg-secondary/40"

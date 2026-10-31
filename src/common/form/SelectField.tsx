@@ -205,6 +205,8 @@ function SelectFieldComponent(props: SelectPropsType) {
             style={formItemStyle}
           >
             <Select
+              id={id}
+              aria-invalid={Boolean(fieldState.error)}
               className={classNames("w-full", className)}
               classNames={mergedClassNames}
               placeholder={placeholder}

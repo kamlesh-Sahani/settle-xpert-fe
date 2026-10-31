@@ -41,6 +41,8 @@ export default function PasswordField(props: PasswordFieldProps) {
             className="mb-0"
           >
             <Input.Password
+              id={id}
+              aria-invalid={Boolean(fieldState.error)}
               className={classNames("w-full hover:border-primary-400 transition-all", className)}
               placeholder={placeholder}
               disabled={disabled}

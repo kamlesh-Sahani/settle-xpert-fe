@@ -44,6 +44,7 @@ export default function DynamicConfirmationModal({
     <DynamicModal
       isOpen={isOpen}
       onClose={onClose}
+      role="alertdialog"
       zIndex={zIndex}
       close={close}
       shouldCloseOnOverlayClick={!isLoading}

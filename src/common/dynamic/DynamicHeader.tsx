@@ -129,7 +129,8 @@ const DynamicHeader: React.FC<DynamicHeaderProps> = ({
                             <Tooltip title="Export CSV">
                                 <button
                                     type="button"
-                                    className="p-0 border-none bg-transparent cursor-pointer flex items-center justify-center hover:opacity-80 active:scale-95 transition-all outline-none"
+                                    aria-label="Export table as CSV"
+                                    className="p-0 border-none bg-transparent cursor-pointer flex items-center justify-center hover:opacity-80 active:scale-95 transition-all outline-none focus-visible:outline-2 focus-visible:outline-primary rounded"
                                     onClick={() => handleExportClick("csv")}
                                 >
                                     <CsvIcon className="text-primary w-[20px] h-[26px]" />
@@ -140,7 +141,8 @@ const DynamicHeader: React.FC<DynamicHeaderProps> = ({
                             <Tooltip title="Export Excel">
                                 <button
                                     type="button"
-                                    className="p-0 border-none bg-transparent cursor-pointer flex items-center justify-center hover:opacity-80 active:scale-95 transition-all outline-none"
+                                    aria-label="Export table as Excel"
+                                    className="p-0 border-none bg-transparent cursor-pointer flex items-center justify-center hover:opacity-80 active:scale-95 transition-all outline-none focus-visible:outline-2 focus-visible:outline-primary rounded"
                                     onClick={() => handleExportClick("excel")}
                                 >
                                     <ExcelIcon className="text-primary w-[26px] h-[26px]" />
@@ -155,6 +157,7 @@ const DynamicHeader: React.FC<DynamicHeaderProps> = ({
                     {isNotEmptyArray(filters?.columns) && (
                         <Tooltip title="Settings">
                             <ButtonField
+                                aria-label="Customize table columns"
                                 icon={<AiFillSetting className="text-text-primary text-[15px] flex items-center justify-center" />}
                                 className={classNames("bg-secondary border-border hover:bg-secondary/80 transition-colors duration-200 rounded-lg h-[34px] w-[40px] flex items-center justify-center p-0 shadow-sm", {
                                     "bg-primary-50 border-primary-200 text-primary-600":
@@ -175,6 +178,7 @@ const DynamicHeader: React.FC<DynamicHeaderProps> = ({
                     {(isNotEmptyArray(filters?.backendFilters) || isNotEmptyArray(filters?.columns)) && (
                         <Tooltip title="Filters">
                             <ButtonField
+                                aria-label="Open table filters"
                                 icon={<FaFilter className="text-text-primary text-[15px] flex items-center justify-center" />}
                                 className={classNames("bg-secondary border-border hover:bg-secondary/80 transition-colors duration-200 rounded-lg h-[34px] w-[40px] flex items-center justify-center p-0 shadow-sm", {
                                     "bg-primary-50 border-primary-200 text-primary-600":

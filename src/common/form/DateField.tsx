@@ -21,7 +21,7 @@ export default function DateField(props: DateFieldProps) {
 
   return (
     <Controller
-      name={(name || "") + id}
+      name={name || id}
       control={control}
       render={({ field, fieldState }) => {
         const handleChange = (date: any, _dateString: any) => {
@@ -39,6 +39,8 @@ export default function DateField(props: DateFieldProps) {
             className="mb-0"
           >
             <DatePicker
+              id={id}
+              aria-invalid={Boolean(fieldState.error)}
               className={classNames("w-full hover:border-primary-400 transition-all", className)}
               placeholder={placeholder}
               disabled={disabled}

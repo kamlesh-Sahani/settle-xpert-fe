@@ -1,6 +1,7 @@
 "use client";
 import {useState, useEffect, useCallback, useRef, useMemo} from "react";
 import type {VelocityConfig, VelocityResponse} from "velocity-http";
+import { responseError } from "@/common/utils";
 
 type VelocityMethod =
   | ((url: string, config?: VelocityConfig) => Promise<VelocityResponse<any>>)
@@ -65,14 +66,14 @@ export const useFetch = <R = unknown, T = unknown>({
           response = await (client as (...args: unknown[]) => Promise<VelocityResponse<any>>)(url, finalConfig);
         }
         
-        if(!response.data?.success){
-          setError(response.data?.message);
-        }
-        
-        if (!controller.signal.aborted) {
+        if (response.data && response.data.success === false) {
+          setError(response.data.message || "Failed to load data");
+          setData(null);
+        } else if (!controller.signal.aborted) {
           const result = response?.data ?? null;
+          setError(null);
           setData(result as R);
-          if (response.data?.success && onSuccessRef.current) {
+          if (onSuccessRef.current) {
             onSuccessRef.current(result as R);
           }
         }
@@ -83,8 +84,8 @@ export const useFetch = <R = unknown, T = unknown>({
           errorObj.name !== "CancelError" &&
           !controller.signal.aborted
         ) {
-          const msg = errorObj.message || "Something went wrong";
-          setError(msg);
+          setError(responseError(err));
+          setData(null);
         }
       } finally {
         if (!controller.signal.aborted) setLoading(false);

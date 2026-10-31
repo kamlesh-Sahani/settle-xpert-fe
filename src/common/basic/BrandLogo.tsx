@@ -60,7 +60,7 @@ export default function BrandLogo({
 
   if (collapsed) {
     return (
-      <div className={classNames("flex items-center justify-center", className)}>
+      <div role="img" aria-label="SettleXpert Logo" className={classNames("flex items-center justify-center", className)}>
         <BrandIcon className="h-7 w-auto text-primary" />
       </div>
     );

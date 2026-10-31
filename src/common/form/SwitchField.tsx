@@ -22,7 +22,7 @@ export default function SwitchField(props: SwitchFieldProps) {
 
   return (
     <Controller
-      name={(name || "") + id}
+      name={name || id}
       control={control}
       render={({ field, fieldState }) => {
         const handleChange = (val: any) => {
@@ -36,7 +36,9 @@ export default function SwitchField(props: SwitchFieldProps) {
             className="mb-0"
           >
             <Switch
-              className={classNames("w-full hover:border-primary-400 transition-all", className)}
+              id={id}
+              aria-label={props.label || id}
+              className={classNames("hover:border-primary-400 transition-all", className)}
               disabled={disabled}
               checked={field.value} {...field}
               onChange={handleChange}

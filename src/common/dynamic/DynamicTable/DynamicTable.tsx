@@ -121,16 +121,21 @@ export default function DynamicTable({
   const rows = accumulatedRows;
 
   // ─── Sync Loading State to Global Filters ─────────────────────────────────
+  const refetchRef = useRef(response.refetch);
+  useEffect(() => {
+    refetchRef.current = response.refetch;
+  });
+
   useEffect(() => {
     setFilters({
       tableLoading: response.loading,
       refresh: () => {
         setIsFirstCall(true);
-        response?.refetch();
+        refetchRef.current?.();
         setPayload(INITIAL_TABLE_PAYLOAD);
       }
     });
-  }, [response.loading]);
+  }, [response.loading, setFilters]);
 
   // ─── External Refresh Trigger ─────────────────────────────────────────────
   const isFirstMountRef = useRef(true);
@@ -258,8 +263,15 @@ export default function DynamicTable({
   }, [paginationType, handleScroll, rows.length]);
 
   // ─── Virtual scrollbar: always visible + configurable height ──────────────
-  const [scrollbarHeight, setScrollbarHeight] = useState(getScrollbarHeight);
+  const [scrollbarHeight, setScrollbarHeight] = useState(8);
   const [showScrollbarControl, setShowScrollbarControl] = useState(false);
+
+  useEffect(() => {
+    const stored = getScrollbarHeight();
+    if (stored !== 8) {
+      setScrollbarHeight(stored);
+    }
+  }, []);
 
   const applyScrollbarStyles = useCallback(() => {
     if (!tableRef.current || rows.length === 0) return;
@@ -395,7 +407,14 @@ export default function DynamicTable({
               )
               : undefined
           }
-          locale={{ emptyText: <EmptyState msg={response.error || response.data?.message || "No Data Found"} /> }}
+          locale={{
+            emptyText: (
+              <EmptyState
+                msg={response.error || response.data?.message || "No Data Found"}
+                onRetry={response.error ? () => response.refetch() : undefined}
+              />
+            ),
+          }}
         />
       </ConfigProvider>
     </div>

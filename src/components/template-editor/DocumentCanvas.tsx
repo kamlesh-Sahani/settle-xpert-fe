@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Editor, EditorContent } from "@tiptap/react";
+import DOMPurify from "dompurify";
 import { HeaderConfig, FooterConfig, DocumentSettings, VariableItem } from "./templateEditor.types";
 import { MdFormatAlignLeft, MdFormatAlignCenter, MdFormatAlignRight } from "react-icons/md";
 
@@ -26,11 +27,22 @@ export default function DocumentCanvas({
   variables,
   isPreviewMode,
 }: DocumentCanvasProps) {
-  // Resolve tokens for preview mode
+  // Helper to escape HTML characters before interpolation
+  const escapeHtml = (str: string) => {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
+  // Resolve tokens for preview mode and sanitize against XSS
   const getResolvedHtml = () => {
     if (!editor) return "";
     let html = editor.getHTML();
     variables.forEach((v) => {
+      const safePreview = escapeHtml(v.previewValue || "");
       // Replace mention tags with styled preview values
       const tagRegex = new RegExp(
         `<span[^>]*data-id="${v.key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"[^>]*>[^<]*<\\/span>`,
@@ -38,17 +50,21 @@ export default function DocumentCanvas({
       );
       html = html.replace(
         tagRegex,
-        `<span style="background-color: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${v.previewValue}</span>`
+        `<span style="background-color: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${safePreview}</span>`
       );
 
       // Also replace raw {{...}} if any exists
       const rawRegex = new RegExp(v.key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
       html = html.replace(
         rawRegex,
-        `<span style="background-color: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${v.previewValue}</span>`
+        `<span style="background-color: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${safePreview}</span>`
       );
     });
-    return html;
+
+    return DOMPurify.sanitize(html, {
+      USE_PROFILES: { html: true },
+      ALLOWED_ATTR: ["style", "class", "data-id", "src", "alt", "href", "target"],
+    });
   };
 
   const resolveText = (text: string) => {

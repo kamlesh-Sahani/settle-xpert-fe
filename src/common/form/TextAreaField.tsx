@@ -43,6 +43,8 @@ export default function TextAreaField(props: TextAreaFieldProps) {
             className="mb-0"
           >
             <Input.TextArea
+              id={id}
+              aria-invalid={Boolean(fieldState.error)}
               className={classNames("w-full hover:primary-blue-400 transition-all", className)}
               placeholder={placeholder}
               disabled={disabled}

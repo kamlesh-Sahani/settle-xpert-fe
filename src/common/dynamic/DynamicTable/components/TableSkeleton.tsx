@@ -58,7 +58,7 @@ function TableSkeleton({ rows = 5, columns = 4 }: TableSkeletonProps) {
                   active
                   size="small"
                   style={{
-                    width: colIdx === 0 ? "80%" : `${60 + Math.random() * 30}%`,
+                    width: colIdx === 0 ? "80%" : `${60 + ((rowIdx * 7 + colIdx * 13) % 30)}%`,
                     height: 12,
                     borderRadius: 4,
                   }}

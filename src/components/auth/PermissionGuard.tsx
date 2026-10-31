@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useEmployeeStore } from '@/store/employee.store';
 import { isArray } from '@/common/utils/main.utils';
+import { ErrorApi } from '@/common/ui/ErrorApi';
 
 interface PermissionGuardProps {
   required: string | string[];
@@ -31,10 +33,25 @@ export function usePermission(required: string | string[]): boolean {
     : check(required);
 }
 
+const DefaultAccessDenied = () => (
+  <ErrorApi
+    title="Access Restricted"
+    message="You do not have permission to view this content. Contact your administrator if you need access."
+    action={
+      <Link
+        href="/"
+        className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover rounded-lg transition-all duration-200"
+      >
+        Return to Dashboard
+      </Link>
+    }
+  />
+);
+
 export default function PermissionGuard({ 
   required, 
   children, 
-  fallback = null,
+  fallback,
   loadingFallback = null
 }: PermissionGuardProps) {
   const isInitialized = useEmployeeStore((state) => state.isInitialized);
@@ -51,7 +68,7 @@ export default function PermissionGuard({
     : hasPermission(required);
 
   if (!isAllowed) {
-    return <>{fallback}</>;
+    return <>{fallback !== undefined ? fallback : <DefaultAccessDenied />}</>;
   }
 
   return <>{children}</>;

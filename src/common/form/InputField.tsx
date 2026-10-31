@@ -43,6 +43,8 @@ export default function InputField(props: InputFieldProps) {
               className="mb-0"
             >
               <Input.Password
+                id={id}
+                aria-invalid={Boolean(fieldState.error)}
                 className={classNames("w-full hover:border-primary-400 transition-all", className)}
                 placeholder={placeholder}
                 disabled={disabled}
@@ -63,6 +65,8 @@ export default function InputField(props: InputFieldProps) {
             className="mb-0"
           >
             <Input
+              id={id}
+              aria-invalid={Boolean(fieldState.error)}
               type={_type}
               className={classNames("w-full hover:border-primary-400 transition-all", className)}
               placeholder={placeholder}

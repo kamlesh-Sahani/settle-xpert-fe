@@ -15,7 +15,8 @@ function FormSkeleton({
   showSubmitButton = true,
 }: FormSkeletonProps) {
   return (
-    <div className="w-full flex flex-col gap-6">
+    <div className="w-full flex flex-col gap-6" role="status" aria-busy="true">
+      <span className="sr-only">Loading form content...</span>
       <div
         style={{
           display: "grid",
@@ -30,7 +31,7 @@ function FormSkeleton({
               active
               size="small"
               style={{
-                width: `${Math.max(20, Math.random() * 40 + 20)}%`, // Random width between 20% and 60%
+                width: `${25 + ((idx * 17) % 35)}%`,
                 height: 14,
                 borderRadius: 4,
               }}

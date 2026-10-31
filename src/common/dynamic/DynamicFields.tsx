@@ -126,7 +126,7 @@ const SingleField = memo(function SingleField({ config, control }: { config: Fie
     <Col span={config?.span || 24} offset={config?.offset || 0} className="mb-4">
       {
         !textTypes.has(config?.type) && config?.label && (
-          <div className="text-[13px] mb-[3px] flex items-center gap-1 text-text-primary font-medium">
+          <label htmlFor={config?.id} className="text-[13px] mb-[3px] flex items-center gap-1 text-text-primary font-medium cursor-pointer">
             <span>{config?.label}</span>
             {config?.tooltip && (
               <Tooltip
@@ -140,7 +140,7 @@ const SingleField = memo(function SingleField({ config, control }: { config: Fie
                 </span>
               </Tooltip>
             )}
-          </div>
+          </label>
         )
       }
       <Field {...config} control={control} />

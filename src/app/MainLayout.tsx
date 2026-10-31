@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import DynamicSideBar from "@/common/dynamic/DynamicSideBar";
 import { usePathname, useRouter } from "next/navigation";
 import { useSideMenu } from "@/store/menus/sideMenu.store";
@@ -76,6 +76,13 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     router.replace("/login");
   };
 
+  const filteredMenuItems = useMemo(() => {
+    return (menus[currentMenu] || []).filter((item: any) => {
+      if (!item.permission) return true;
+      return permissions.has(item.permission);
+    });
+  }, [menus, currentMenu, permissions]);
+
   if (!isProtectedRoute) {
     return <>{children}</>;
   }
@@ -109,11 +116,6 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     { key: "MAIN", label: "Employee" },
     { key: "SECONDARY", label: "Admin Setting" }
   ];
-
-  const filteredMenuItems = menus[currentMenu]?.filter((item: any) => {
-    if (!item.permission) return true;
-    return permissions.has(item.permission);
-  });
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">

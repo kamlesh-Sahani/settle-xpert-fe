@@ -60,12 +60,16 @@ export default function LoginPage() {
 
       setTimeout(() => {
         const searchParams = new URLSearchParams(window.location.search);
-        const callbackUrl = searchParams.get("callbackUrl");
-        if (callbackUrl) {
-          router.push(callbackUrl);
-        } else {
-          router.push("/");
-        }
+        const rawCallbackUrl = searchParams.get("callbackUrl");
+        // Prevent open redirect by ensuring URL is a relative internal path
+        const safeCallbackUrl =
+          rawCallbackUrl &&
+          rawCallbackUrl.startsWith("/") &&
+          !rawCallbackUrl.startsWith("//") &&
+          !rawCallbackUrl.startsWith("/\\")
+            ? rawCallbackUrl
+            : "/";
+        router.push(safeCallbackUrl);
       }, 400);
     } catch (err: any) {
       setSubmitStatus({

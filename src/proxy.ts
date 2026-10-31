@@ -6,14 +6,16 @@ const PUBLIC_ROUTES = [
   '/verify',
 ];
 
+const STATIC_ASSET_REGEX = /\.(?:ico|png|jpg|jpeg|gif|svg|webp|css|js|woff|woff2|ttf|eot|map|txt|xml)$/i;
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip static assets, next internal routes, and direct files
+  // Skip static assets and next internal routes using strict regex
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
-    pathname.includes('.')
+    STATIC_ASSET_REGEX.test(pathname)
   ) {
     return NextResponse.next();
   }

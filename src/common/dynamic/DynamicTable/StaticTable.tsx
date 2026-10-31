@@ -250,8 +250,15 @@ export default function StaticTable({
   }, []);
 
   // ─── Virtual scrollbar: always visible + configurable height ──────────────
-  const [scrollbarHeight, setScrollbarHeight] = useState(getScrollbarHeight);
+  const [scrollbarHeight, setScrollbarHeight] = useState(8);
   const [showScrollbarControl, setShowScrollbarControl] = useState(false);
+
+  useEffect(() => {
+    const stored = getScrollbarHeight();
+    if (stored !== 8) {
+      setScrollbarHeight(stored);
+    }
+  }, []);
 
   const applyScrollbarStyles = useCallback(() => {
     if (!tableRef.current || rows.length === 0) return;

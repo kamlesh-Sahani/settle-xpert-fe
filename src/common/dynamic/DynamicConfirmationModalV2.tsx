@@ -71,6 +71,7 @@ export default function DynamicConfirmationModalV2({
         <DynamicModal
             isOpen={isOpen}
             onClose={onClose}
+            role="alertdialog"
             hideCloseButton={true}
             headerClassName="hidden"
             className="w-[95%] max-w-[420px] rounded-md shadow-2xl overflow-hidden !border-0 !border-none p-0 bg-background"

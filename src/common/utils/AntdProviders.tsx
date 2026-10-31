@@ -8,22 +8,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const { appSettings } = useStore();
   const { primaryColor } = useThemeStore();
 
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    document.documentElement.classList.toggle(
+      "dark",
+      appSettings.mode === "dark",
+    );
+  }, [appSettings.mode]);
 
-  useEffect(() => {
-    if (mounted) {
-      document.documentElement.classList.toggle(
-        "dark",
-        appSettings.mode === "dark",
-      );
-    }
-  }, [appSettings.mode, mounted]);
-
-  if (!mounted) return null;
   return (
     <ConfigProvider
       theme={{

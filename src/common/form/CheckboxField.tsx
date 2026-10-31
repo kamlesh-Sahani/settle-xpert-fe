@@ -22,7 +22,7 @@ export default function CheckboxField(props: CheckboxFieldProps) {
 
   return (
     <Controller
-      name={(name || "") + id}
+      name={name || id}
       control={control}
       render={({ field, fieldState }) => {
         const handleChange = (val: any) => {
@@ -35,18 +35,21 @@ export default function CheckboxField(props: CheckboxFieldProps) {
 
         return (
           <Form.Item
+            id={id}
             validateStatus={fieldState.error ? "error" : ""}
             help={fieldState.error?.message}
             className="mb-0"
           >
-            <Checkbox.Group
-              className={classNames("w-full hover:border-primary-400 transition-all flex flex-wrap gap-2", className)}
-              disabled={disabled}
-              options={formattedOptions}
-              {...field}
-              onChange={handleChange}
-              {...rest}
-            />
+            <div id={id}>
+              <Checkbox.Group
+                className={classNames("w-full hover:border-primary-400 transition-all flex flex-wrap gap-2", className)}
+                disabled={disabled}
+                options={formattedOptions}
+                {...field}
+                onChange={handleChange}
+                {...rest}
+              />
+            </div>
           </Form.Item>
         );
       }}

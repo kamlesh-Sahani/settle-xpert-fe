@@ -44,10 +44,15 @@ export default function DynamicDrawer({
       closeIcon={false}
       title={
         <div className={classNames("flex items-center  w-full bg-background ", titleClassName)} >
-          <div className="flex  cursor-pointer items-center gap-2 " onClick={onClose}>
+          <button
+            type="button"
+            aria-label="Back / Close"
+            className="flex cursor-pointer items-center gap-2 bg-transparent border-0 p-0 text-inherit focus-visible:outline-2 focus-visible:outline-primary rounded"
+            onClick={onClose}
+          >
             <GoArrowLeft className="text-[18px]" />
             <span className="text-[14px] font-semibold text-text-primary">{title}</span>
-          </div>
+          </button>
 
           {ExtraTitleChild}
         </div>

@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { InboxOutlined } from "@ant-design/icons";
 
-function EmptyState({ msg = "No Data Found" }: { msg: string }) {
+function EmptyState({ msg = "No Data Found", onRetry }: { msg: string; onRetry?: () => void }) {
   return (
     <div
       style={{
@@ -40,6 +40,15 @@ function EmptyState({ msg = "No Data Found" }: { msg: string }) {
       >
         {msg}
       </p>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="mt-1 px-4 py-1.5 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 rounded-md transition-colors cursor-pointer"
+        >
+          Try Again
+        </button>
+      )}
     </div>
   );
 }

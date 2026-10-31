@@ -23,6 +23,11 @@
   flex-direction: column;
 }
 
+.modal__content:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 /* ── Overlay ─────────────────────────────────────────────────────────────── */
 .modal__overlay {
   position: fixed;

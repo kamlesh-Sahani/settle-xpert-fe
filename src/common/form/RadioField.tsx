@@ -24,7 +24,7 @@ export default function RadioField(props: RadioFieldProps) {
 
   return (
     <Controller
-      name={(name || "") + id}
+      name={name || id}
       control={control}
       render={({ field, fieldState }) => {
         const handleChange = (val: any) => {
@@ -42,6 +42,8 @@ export default function RadioField(props: RadioFieldProps) {
             className="mb-0"
           >
             <Radio.Group
+              id={id}
+              aria-invalid={Boolean(fieldState.error)}
               className={classNames("w-full hover:border-primary-400 transition-all flex flex-wrap gap-2", className)}
               disabled={disabled}
               options={formattedOptions}

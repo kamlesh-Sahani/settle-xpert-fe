@@ -27,7 +27,7 @@ const DynamicForm = ({ apiUrl, method, options }: dynamicFormPropsType) => {
 
   const _fields = (data as any)?.data;
 
-  const formSchema = {
+  const formSchema = useMemo(() => ({
     rows: [
       [
         {
@@ -1049,7 +1049,7 @@ const DynamicForm = ({ apiUrl, method, options }: dynamicFormPropsType) => {
         },
       ],
     ],
-  };
+  }), []);
 
   const initialValues = useMemo(() => {
     return getInitialValues(formSchema.rows as any);

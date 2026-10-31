@@ -82,7 +82,9 @@ export default function IntegrationsPage() {
   };
 
   const generateNewToken = () => {
-    const random = "meta_verify_" + Math.random().toString(36).substring(2, 10);
+    const bytes = new Uint8Array(12);
+    window.crypto.getRandomValues(bytes);
+    const random = "meta_verify_" + Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
     setValue("verifyToken", random, { shouldDirty: true });
     message.info("Generated new verify token. Click Save to apply.");
   };

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AntdProviders from "@/common/utils/AntdProviders";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import MainLayout from "./MainLayout";
 
 import { IBM_Plex_Sans } from "next/font/google";
@@ -33,9 +34,11 @@ export default function RootLayout({
         suppressHydrationWarning
         className="font-sans antialiased bg-background text-text-primary min-h-screen"
       >
-        <AntdProviders>
-          <MainLayout>{children}</MainLayout>
-        </AntdProviders>
+        <AntdRegistry>
+          <AntdProviders>
+            <MainLayout>{children}</MainLayout>
+          </AntdProviders>
+        </AntdRegistry>
       </body>
     </html>
   );

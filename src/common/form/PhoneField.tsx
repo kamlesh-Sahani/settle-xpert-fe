@@ -104,6 +104,7 @@ const PhoneField = (props: PhoneFieldProps) => {
           >
             <Space.Compact className="w-full">
               <Select
+                aria-label="Country dial code"
                 value={selectedCountry}
                 onChange={handleCountryChange}
                 options={options}
@@ -113,7 +114,7 @@ const PhoneField = (props: PhoneFieldProps) => {
                 disabled={disabled}
                 styles={{ popup: { root: { width: 280 } } }}
                 onOpenChange={handleOpenChange}
-                className={classNames("bg-secondary py-0 outline-0 focus-0", style["phone-field"])}
+                className={classNames("bg-secondary py-0", style["phone-field"])}
                 labelRender={() => (
                   <div className="flex items-center justify-center">
                     <span className="text text-[15px] h-[20px]">{selectedCountryData?.flag}</span>
@@ -136,6 +137,8 @@ const PhoneField = (props: PhoneFieldProps) => {
                 )}
               />
               <Input
+                id={id}
+                aria-invalid={Boolean(fieldState.error)}
                 prefix={<span className="text-text-primary font-medium mr-1">{selectedCountryData?.dial}</span>}
                 placeholder={placeholder || "Enter Phone number"}
                 disabled={disabled}

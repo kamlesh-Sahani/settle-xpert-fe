@@ -243,11 +243,9 @@ const DynamicSideBarContent: React.FC<DynamicSideBarProps> = ({
     } else {
       params.delete("selectedParentKey");
     }
-    window.history.replaceState(
-      null,
-      "",
-      window.location.pathname + "?" + params.toString(),
-    );
+    const qs = params.toString();
+    const newUrl = qs ? `${pathname}?${qs}` : pathname;
+    router.replace(newUrl, { scroll: false });
   };
 
   const { selectedKeys, openKeys } = useMemo(() => {

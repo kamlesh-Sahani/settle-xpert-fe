@@ -131,7 +131,11 @@ function DynamicModal({
       onRequestClose={onClose}
       shouldCloseOnOverlayClick={true}
       closeTimeoutMS={200}
-      ariaHideApp={false}
+      ariaHideApp={typeof document !== "undefined" && Boolean(document.getElementById("__next") || document.body)}
+      appElement={typeof document !== "undefined" ? (document.getElementById("__next") || document.body) : undefined}
+      aria={{
+        modal: true,
+      }}
       style={{
         overlay: { zIndex: zIndex ?? 50, ...props.style?.overlay },
         content: { ...props.style?.content },
