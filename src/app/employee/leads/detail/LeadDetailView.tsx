@@ -9,7 +9,7 @@ import ButtonField from "@/common/basic/ButtonField";
 import DynamicHeader from "@/common/dynamic/DynamicHeader";
 import { ErrorApi } from "@/common/ui/ErrorApi";
 import { Tag, Tabs, Dropdown, ConfigProvider } from "antd";
-import { DownOutlined, ExpandOutlined, EditOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import { DownOutlined, ExpandOutlined, EditOutlined, ClockCircleOutlined, UserAddOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import DynamicModal from "@/common/dynamic/DynamicModal";
 import DynamicConfirmationModal from "@/common/dynamic/DynamicConfirmationModal";
 import { SubmitStatusType } from "@/common/form/FormStatusMessage";
@@ -122,6 +122,8 @@ interface LeadData {
   lostReason?: string;
   closingNotes?: string;
   convertedAt?: string;
+  customerId?: string;
+  customerNumber?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -187,6 +189,9 @@ export default function LeadDetailView({ leadId }: { leadId?: string }) {
   const [pendingStatus, setPendingStatus] = useState<string | null>(null);
   const [isStatusUpdating, setIsStatusUpdating] = useState(false);
   const [statusFeedback, setStatusFeedback] = useState<SubmitStatusType | null>(null);
+  const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
+  const [convertFeedback, setConvertFeedback] = useState<SubmitStatusType | null>(null);
   const [viewingChat, setViewingChat] = useState<{ title: string; messages: ParsedChatMessage[] } | null>(null);
 
   const { data: fetchResponse, loading, error, refetch } = useFetch<{ data: LeadData }>({
@@ -235,6 +240,41 @@ export default function LeadDetailView({ leadId }: { leadId?: string }) {
       });
     } finally {
       setIsStatusUpdating(false);
+    }
+  };
+
+  const handleConfirmConvert = async () => {
+    if (!fetchResponse?.data?.id) return;
+
+    setIsConverting(true);
+    setConvertFeedback(null);
+    try {
+      const res = await api.post("/api/v1/lead/convert", {
+        leadId: fetchResponse.data.id,
+      });
+      if (res.data?.success) {
+        setConvertFeedback({
+          type: "success",
+          text: res.data?.message || "Lead converted to customer successfully",
+        });
+        setTimeout(() => {
+          setIsConvertModalOpen(false);
+          setConvertFeedback(null);
+          refetch();
+        }, 800);
+      } else {
+        setConvertFeedback({
+          type: "error",
+          text: res.data?.message || "Failed to convert lead",
+        });
+      }
+    } catch (err: any) {
+      setConvertFeedback({
+        type: "error",
+        text: responseError(err),
+      });
+    } finally {
+      setIsConverting(false);
     }
   };
 
@@ -288,8 +328,32 @@ export default function LeadDetailView({ leadId }: { leadId?: string }) {
     },
   }));
 
+  const isAlreadyConverted = Boolean(fetchResponse.data.customerId);
+
   const rightSection = (
     <div className="flex items-center gap-3">
+      {isAlreadyConverted ? (
+        <button
+          type="button"
+          onClick={() => router.push(fetchResponse.data.customerId ? `/customers/${fetchResponse.data.customerId}` : "/customers")}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100/80 transition-colors cursor-pointer"
+        >
+          <CheckCircleOutlined className="text-emerald-600" />
+          Converted to Customer {fetchResponse.data.customerNumber ? `(${fetchResponse.data.customerNumber})` : ""}
+        </button>
+      ) : (
+        <ButtonField
+          type="default"
+          icon={<UserAddOutlined className="text-xs text-emerald-600" />}
+          onClick={() => {
+            setIsConvertModalOpen(true);
+            setConvertFeedback(null);
+          }}
+          className="h-[38px] text-xs font-semibold rounded-lg px-3.5 flex items-center gap-1.5 border-emerald-500 text-emerald-700 hover:!bg-emerald-50 hover:!border-emerald-600 transition-all shadow-2xs"
+        >
+          Convert to Customer
+        </ButtonField>
+      )}
       <ButtonField
         type="primary"
         icon={<EditOutlined className="text-xs" />}
@@ -984,6 +1048,39 @@ export default function LeadDetailView({ leadId }: { leadId?: string }) {
             </p>
           }
           confirmText="Change Status"
+          cancelText="Cancel"
+        />
+      )}
+
+      {isConvertModalOpen && (
+        <DynamicConfirmationModal
+          isOpen={isConvertModalOpen}
+          onClose={() => {
+            if (!isConverting) {
+              setIsConvertModalOpen(false);
+              setConvertFeedback(null);
+            }
+          }}
+          onConfirm={handleConfirmConvert}
+          isLoading={isConverting}
+          status={convertFeedback}
+          onDismissStatus={() => setConvertFeedback(null)}
+          title="Convert Lead to Customer"
+          message={
+            <div className="text-sm text-text-secondary leading-relaxed space-y-2">
+              <p className="m-0">
+                Are you sure you want to convert{" "}
+                <span className="font-semibold text-text-primary">
+                  &quot;{fetchResponse.data.fullName}&quot;
+                </span>{" "}
+                into an active customer?
+              </p>
+              <p className="m-0 text-xs text-text-secondary">
+                This will create a registered customer profile with their personal and loan portfolio, link it to this lead, and mark the status as Converted.
+              </p>
+            </div>
+          }
+          confirmText="Convert to Customer"
           cancelText="Cancel"
         />
       )}

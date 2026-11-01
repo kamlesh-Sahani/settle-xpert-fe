@@ -2,13 +2,7 @@ import {
   AppstoreOutlined,
   TeamOutlined,
   ContactsOutlined,
-  FolderOpenOutlined,
   SafetyCertificateOutlined,
-  AlertOutlined,
-  CalculatorOutlined,
-  CheckSquareOutlined,
-  BankOutlined,
-  ApiOutlined,
   ApartmentOutlined,
 } from "@ant-design/icons";
 import MetaIcon from "@/assets/icons/MetaIcon";
@@ -34,41 +28,6 @@ export const mainMenu = [
     label: "Customers",
     route: "/customers" as any,
     permission: "customer:read",
-  },
-  {
-    key: "loans",
-    icon: <BankOutlined className="text-[17px]" />,
-    label: "Loans & Debts",
-    route: "/loans" as any,
-    permission: "loan:read",
-  },
-  {
-    key: "cases",
-    icon: <FolderOpenOutlined className="text-[17px]" />,
-    label: "Case Management",
-    route: "/cases" as any,
-    permission: "case:read",
-  },
-  {
-    key: "assessments",
-    icon: <CalculatorOutlined className="text-[17px]" />,
-    label: "Debt Assessments",
-    route: "/assessments" as any,
-    permission: "assessment:read",
-  },
-  {
-    key: "tasks",
-    icon: <CheckSquareOutlined className="text-[17px]" />,
-    label: "Tasks & Follow-ups",
-    route: "/tasks" as any,
-    permission: "task:read",
-  },
-  {
-    key: "complaints",
-    icon: <AlertOutlined className="text-[17px]" />,
-    label: "Harassment & Complaints",
-    route: "/complaints" as any,
-    permission: "complaint:read",
   },
 ];
 
