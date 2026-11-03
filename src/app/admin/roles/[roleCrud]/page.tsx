@@ -9,13 +9,14 @@ import DynamicSideBar from "@/common/dynamic/DynamicSideBar";
 import InputField from "@/common/form/InputField";
 import TextAreaField from "@/common/form/TextAreaField";
 import SwitchField from "@/common/form/SwitchField";
+import MultiSelectField from "@/common/form/MultiSelectField";
+import TimePickerField from "@/common/form/TimePickerField";
 import ButtonField from "@/common/basic/ButtonField";
 import LabelField from "@/common/form/LabelField";
 import FormStatusMessage from "@/common/form/FormStatusMessage";
 import LoadingSpinner from "@/common/basic/LoadingSpinner";
 import { ErrorApi } from "@/common/ui/ErrorApi";
-import api from "@/common/utils/api";
-import { isArray, isNotEmptyArray, responseError } from "@/common/utils/main.utils";
+import { api, responseError, isArray, isNotEmptyArray, isNotEmptyObject } from "@/common/utils";
 import { useFetch } from "@/hooks/useFetch";
 import type { MenuProps } from "antd";
 import { Tooltip } from "antd";
@@ -29,6 +30,16 @@ import { usePermission } from "@/components/auth/PermissionGuard";
 /* ------------------------------------------------------------------ */
 /*  Role Detail Tab Form Component                                    */
 /* ------------------------------------------------------------------ */
+const DAY_OPTIONS = [
+    { key: "1", label: "Monday", value: "1" },
+    { key: "2", label: "Tuesday", value: "2" },
+    { key: "3", label: "Wednesday", value: "3" },
+    { key: "4", label: "Thursday", value: "4" },
+    { key: "5", label: "Friday", value: "5" },
+    { key: "6", label: "Saturday", value: "6" },
+    { key: "0", label: "Sunday", value: "0" },
+];
+
 interface RoleDetailTabProps {
     roleId: string;
     isEditing: boolean;
@@ -47,11 +58,15 @@ function RoleDetailTab({ roleId, isEditing, onCancel, onRoleUpdated }: RoleDetai
             name: "",
             description: "",
             status: true,
+            workingHours: {
+                enabled: false,
+            },
         },
     });
 
     const { handleSubmit, reset, control, watch, formState: { isDirty } } = methods;
     const isRoleActive = watch("status");
+    const isWorkingHoursEnabled = watch("workingHours.enabled");
 
     // Fetch role details if in edit mode
     const { data: roleRes, loading, error, refetch } = useFetch({
@@ -67,10 +82,17 @@ function RoleDetailTab({ roleId, isEditing, onCancel, onRoleUpdated }: RoleDetai
         if (isEditing && roleRes) {
             const d = (roleRes as any)?.data || roleRes;
             if (d) {
+                const wh = d.workingHours;
                 reset({
                     name: d.name || "",
                     description: d.description || "",
                     status: typeof d.status === "string" ? d.status === "ACTIVE" : d.status !== undefined ? Boolean(d.status) : true,
+                    workingHours: {
+                        enabled: Boolean(wh?.enabled),
+                        startTime: wh?.startTime || undefined,
+                        endTime: wh?.endTime || undefined,
+                        days: isNotEmptyArray(wh?.days) ? wh.days.map(String) : undefined,
+                    },
                 });
             }
         }
@@ -80,6 +102,14 @@ function RoleDetailTab({ roleId, isEditing, onCancel, onRoleUpdated }: RoleDetai
         setIsSaving(true);
         setSubmitStatus(null);
         try {
+            const wh = formData.workingHours;
+            const workingHoursPayload = isNotEmptyObject(wh) ? {
+                enabled: Boolean(wh.enabled),
+                startTime: wh.startTime || "",
+                endTime: wh.endTime || "",
+                days: isNotEmptyArray(wh.days) ? wh.days.map(Number) : [],
+            } : undefined;
+
             if (!isEditing) {
                 // Create mode: role created with 0 permissions
                 const response: any = await api.post("/api/v1/roles/create", {
@@ -87,6 +117,7 @@ function RoleDetailTab({ roleId, isEditing, onCancel, onRoleUpdated }: RoleDetai
                     description: formData.description,
                     status: true,
                     permissions: [],
+                    workingHours: workingHoursPayload,
                 });
 
                 const payload = response?.data || response;
@@ -109,6 +140,7 @@ function RoleDetailTab({ roleId, isEditing, onCancel, onRoleUpdated }: RoleDetai
                     name: formData.name,
                     description: formData.description,
                     status: formData.status,
+                    workingHours: workingHoursPayload,
                 });
 
                 setSubmitStatus({
@@ -206,6 +238,73 @@ function RoleDetailTab({ roleId, isEditing, onCancel, onRoleUpdated }: RoleDetai
                                 placeholder="Enter brief description..."
                                 rows={4}
                             />
+                        </div>
+
+                        {/* Working Hours Restriction */}
+                        <div className="flex flex-col gap-4 border-t border-border pt-6 mt-2 max-w-[480px]">
+                            <div className="flex items-center justify-between py-2">
+                                <div className="flex flex-col">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-semibold text-text-primary">
+                                            Working Hours Restriction
+                                        </span>
+                                        <span
+                                            className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${
+                                                isWorkingHoursEnabled
+                                                    ? "bg-primary/15 text-primary"
+                                                    : "bg-secondary text-text-secondary"
+                                            }`}
+                                        >
+                                            {isWorkingHoursEnabled ? "Enforced" : "Disabled"}
+                                        </span>
+                                    </div>
+                                    <span className="text-xs text-text-secondary mt-0.5">
+                                        Restrict login and access outside assigned working hours
+                                    </span>
+                                </div>
+                                <div className="shrink-0">
+                                    <SwitchField
+                                        id="workingHours.enabled"
+                                        control={control as any}
+                                        className="w-max"
+                                    />
+                                </div>
+                            </div>
+
+                            {isWorkingHoursEnabled && (
+                                <div className="flex flex-col gap-4 p-4 rounded-xl border border-border bg-card/50">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="flex flex-col">
+                                            <LabelField required>Start Time</LabelField>
+                                            <TimePickerField
+                                                id="workingHours.startTime"
+                                                control={control as any}
+                                                placeholder="Select start time"
+                                                format="HH:mm"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <LabelField required>End Time</LabelField>
+                                            <TimePickerField
+                                                id="workingHours.endTime"
+                                                control={control as any}
+                                                placeholder="Select end time"
+                                                format="HH:mm"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col">
+                                        <LabelField>Allowed Working Days</LabelField>
+                                        <MultiSelectField
+                                            id="workingHours.days"
+                                            control={control as any}
+                                            placeholder="Select working days"
+                                            options={DAY_OPTIONS}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

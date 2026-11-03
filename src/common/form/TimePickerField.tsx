@@ -4,6 +4,9 @@ import { FieldConfig } from "@/types/formField.types";
 import classNames from "classnames";
 import { Control, Controller, FieldValues } from "react-hook-form";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 export interface TimePickerFieldProps extends Partial<FieldConfig> {
   id: string;
@@ -11,23 +14,30 @@ export interface TimePickerFieldProps extends Partial<FieldConfig> {
   onChange?: (val: any) => void;
   className?: string;
   control: Control<FieldValues, any, FieldValues>;
+  format?: string;
 }
 
 export default function TimePickerField(props: TimePickerFieldProps) {
-  const { placeholder, disabled, onChange, value: _value, className, id, name, control, ...rest } = props;
+  const { placeholder, disabled, onChange, value: _value, className, id, name, control, format = "HH:mm", ...rest } = props;
 
   return (
     <Controller
       name={(name || "") + id}
       control={control}
       render={({ field, fieldState }) => {
-        const handleChange = (time: any, _timeString: any) => {
-          const iso = time ? time.toISOString() : null;
-          field.onChange(iso);
-          onChange?.(iso);
+        const handleChange = (_time: any, timeString: any) => {
+          const val = timeString || null;
+          field.onChange(val);
+          onChange?.(val);
+
         };
 
-        const timeValue = field.value ? dayjs(field.value) : null;
+        const timeValue = field.value
+          ? dayjs.isDayjs(field.value)
+            ? field.value
+            : dayjs(field.value, format)
+          : null;
+
 
         return (
           <Form.Item
@@ -40,9 +50,9 @@ export default function TimePickerField(props: TimePickerFieldProps) {
               placeholder={placeholder}
               disabled={disabled}
               size="middle"
-              format="HH:mm"
+              format={format}
               {...field}
-              value={timeValue}
+              value={timeValue && timeValue.isValid() ? timeValue : null}
               onChange={handleChange}
               {...rest}
             />
